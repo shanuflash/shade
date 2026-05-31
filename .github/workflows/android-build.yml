@@ -32,6 +32,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: gradle
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -42,15 +43,15 @@ jobs:
       - name: Generate native project (Expo prebuild)
         run: npx expo prebuild --platform android --no-install
 
-      - name: Build debug APK
+      - name: Build release APK
         run: |
           cd android
           chmod +x ./gradlew
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleRelease --no-daemon --stacktrace
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: shade-debug-apk
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: shade-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
