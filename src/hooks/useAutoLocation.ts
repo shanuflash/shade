@@ -17,11 +17,8 @@ function buildLabel(place: Location.LocationGeocodedAddress | undefined): string
   );
 }
 
-/**
- * Resolves the device location into the settings store when in 'auto' mode.
- * Tries the cached last-known position first (fast, battery-friendly) before
- * requesting a fresh fix.
- */
+// Resolves the device location into the settings store when in 'auto' mode,
+// trying the cached last-known position before requesting a fresh fix.
 export function useAutoLocation() {
   const mode = useSettings((s) => s.mode);
   const setAutoLocation = useSettings((s) => s.setAutoLocation);

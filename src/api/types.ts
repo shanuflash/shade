@@ -1,4 +1,3 @@
-// Raw Open-Meteo /v1/forecast response (only the fields we request).
 export interface OpenMeteoForecastResponse {
   latitude: number;
   longitude: number;
@@ -22,7 +21,6 @@ export interface OpenMeteoForecastResponse {
   };
 }
 
-// A single hour of the normalized forecast.
 export interface HourlyPoint {
   /** Local wall-clock ISO string, e.g. "2026-05-31T14:00". */
   time: string;
@@ -31,28 +29,22 @@ export interface HourlyPoint {
   cloudCover: number;
 }
 
-// Normalized forecast consumed by the UI, recommendations, and the widget.
 export interface Forecast {
   currentUv: number;
-  /** Local wall-clock ISO string for "now" as reported by the API. */
   currentTime: string;
-  /** Cloud cover (%) at the current hour, when available. */
+  /** Null when the current hour isn't present in the response. */
   currentCloudCover: number | null;
-  /** Clear-sky UV at the current hour, when available. */
   currentUvClearSky: number | null;
-  /** Upcoming hours (from the current hour onward), capped to ~24h. */
   hourly: HourlyPoint[];
-  /** All of today's hourly points (for peak detection / safe windows). */
   todayHourly: HourlyPoint[];
   todayMaxUv: number;
-  /** Local ISO string of today's peak UV hour, or null. */
+  /** Null if today's hourly series is empty. */
   todayPeakTime: string | null;
   sunrise: string;
   sunset: string;
   timezone: string;
 }
 
-// A geocoding search result (Open-Meteo geocoding API).
 export interface CityResult {
   id: number;
   name: string;
@@ -62,7 +54,6 @@ export interface CityResult {
   admin1?: string;
 }
 
-// A resolved location (auto or manual) used for fetching + caching.
 export interface SavedLocation {
   latitude: number;
   longitude: number;

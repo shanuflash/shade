@@ -22,7 +22,7 @@ export function dayOf(iso: string): string {
   return iso.split('T')[0];
 }
 
-/** "2 PM", "12 AM", "11 PM" — for hourly chips. */
+/** Hour label like "2 PM". */
 export function hourLabel(iso: string): string {
   const { hour } = parseLocal(iso);
   const period = hour < 12 ? 'AM' : 'PM';
@@ -30,7 +30,7 @@ export function hourLabel(iso: string): string {
   return `${h12} ${period}`;
 }
 
-/** "6:42 AM" — for sunrise/sunset which include minutes. */
+/** Clock label like "6:42 AM" (used for sunrise and sunset). */
 export function clockLabel(iso: string): string {
   const { hour, minute } = parseLocal(iso);
   const period = hour < 12 ? 'AM' : 'PM';

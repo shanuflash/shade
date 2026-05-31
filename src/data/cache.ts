@@ -10,11 +10,8 @@ export interface CachedForecast {
   fetchedAt: number; // epoch ms
 }
 
-/**
- * Single source of truth shared between the app, the home-screen widget's
- * headless task, and the background refresh task. Backed by AsyncStorage so it
- * is readable from every JS context.
- */
+// The app, the widget's headless task, and the background task all read and
+// write this cache, so it lives in AsyncStorage where every JS context can see it.
 export async function writeForecastCache(
   forecast: Forecast,
   location: SavedLocation,
@@ -32,7 +29,6 @@ export async function readForecastCache(): Promise<CachedForecast | null> {
   }
 }
 
-/** Last location we successfully fetched for — used by the background task. */
 export async function readLastLocation(): Promise<SavedLocation | null> {
   const cached = await readForecastCache();
   return cached?.location ?? null;

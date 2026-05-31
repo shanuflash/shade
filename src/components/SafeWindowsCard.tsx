@@ -22,7 +22,7 @@ export function SafeWindowsCard({ windows }: Props) {
           <View key={w.start} style={[styles.pill, { backgroundColor: colors.surfaceAlt }]}>
             <Ionicons name="sunny-outline" size={16} color="#3DBE6E" />
             <Text style={[styles.text, { color: colors.text }]}>
-              {w.startLabel} – {w.endLabel}
+              {w.startLabel} to {w.endLabel}
             </Text>
             <Text style={[styles.sub, { color: colors.textDim }]}>Low UV</Text>
           </View>

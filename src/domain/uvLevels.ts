@@ -1,23 +1,17 @@
-// WHO-aligned UV index bands mapped to the protection guidance in the spec.
+// WHO UV index bands and the protection guidance for each.
 
 export type UvCategory = 'low' | 'moderate' | 'high' | 'veryHigh' | 'extreme';
 
-/** Hex color literal, compatible with react-native-android-widget's ColorProp. */
+// Hex literal so the widget library's ColorProp accepts these directly.
 export type HexColor = `#${string}`;
 
 export interface UvLevel {
   category: UvCategory;
-  /** Short human label, e.g. "Low". */
   label: string;
-  /** Display range, e.g. "0–2". */
   range: string;
-  /** Risk color (used for gauges, widget background, badges). */
   color: HexColor;
-  /** A darker shade for gradients / pressed states. */
   colorDark: HexColor;
-  /** One-line tip suitable for the compact widget. */
   shortTip: string;
-  /** Detailed protection bullets for the recommendation card. */
   advice: string[];
 }
 
@@ -25,10 +19,10 @@ const LEVELS: UvLevel[] = [
   {
     category: 'low',
     label: 'Low',
-    range: '0–2',
+    range: '0-2',
     color: '#3DBE6E',
     colorDark: '#2C9E58',
-    shortTip: 'Safe — no protection needed',
+    shortTip: 'Safe, no protection needed',
     advice: [
       'You can safely enjoy time outside.',
       'No sun protection required for most people.',
@@ -37,7 +31,7 @@ const LEVELS: UvLevel[] = [
   {
     category: 'moderate',
     label: 'Moderate',
-    range: '3–5',
+    range: '3-5',
     color: '#F2C200',
     colorDark: '#D6A900',
     shortTip: 'Sunscreen recommended',
@@ -50,10 +44,10 @@ const LEVELS: UvLevel[] = [
   {
     category: 'high',
     label: 'High',
-    range: '6–7',
+    range: '6-7',
     color: '#F58518',
     colorDark: '#D86F0C',
-    shortTip: 'SPF 30+ & sunglasses',
+    shortTip: 'SPF 30+ and sunglasses',
     advice: [
       'Use SPF 30+ and reapply every 2 hours.',
       'Wear UV-blocking sunglasses and a hat.',
@@ -63,7 +57,7 @@ const LEVELS: UvLevel[] = [
   {
     category: 'veryHigh',
     label: 'Very High',
-    range: '8–10',
+    range: '8-10',
     color: '#EF4444',
     colorDark: '#C9302C',
     shortTip: 'Limit midday exposure',
@@ -88,7 +82,6 @@ const LEVELS: UvLevel[] = [
   },
 ];
 
-/** Map a UV index value to its risk band. */
 export function uvLevel(uv: number): UvLevel {
   const v = Number.isFinite(uv) ? uv : 0;
   if (v < 3) return LEVELS[0];
@@ -98,7 +91,6 @@ export function uvLevel(uv: number): UvLevel {
   return LEVELS[4];
 }
 
-/** True when the current UV is low enough that no protection is needed. */
 export function isSafeNow(uv: number): boolean {
   return uvLevel(uv).category === 'low';
 }

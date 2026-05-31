@@ -28,14 +28,14 @@ export function PeakUvCard({ forecast }: Props) {
     {
       icon: 'time-outline' as const,
       label: 'Peak time',
-      value: forecast.todayPeakTime ? hourLabel(forecast.todayPeakTime) : '—',
+      value: forecast.todayPeakTime ? hourLabel(forecast.todayPeakTime) : 'N/A',
       sub: 'highest today',
       color: colors.text,
     },
     {
       icon: 'partly-sunny-outline' as const,
       label: 'Sunset',
-      value: forecast.sunset ? clockLabel(forecast.sunset) : '—',
+      value: forecast.sunset ? clockLabel(forecast.sunset) : 'N/A',
       sub: 'UV fades after',
       color: colors.text,
     },
