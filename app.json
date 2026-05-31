@@ -45,13 +45,13 @@
               "name": "Uv",
               "label": "Shade UV Index",
               "description": "Live UV index and protection tip for your location.",
-              "minWidth": "180dp",
-              "minHeight": "110dp",
-              "targetCellWidth": 3,
-              "targetCellHeight": 2,
+              "minWidth": "40dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 1,
+              "targetCellHeight": 1,
               "previewImage": "./assets/icon.png",
               "updatePeriodMillis": 1800000,
-              "resizeMode": "horizontal|vertical"
+              "resizeMode": "none"
             }
           ]
         }
