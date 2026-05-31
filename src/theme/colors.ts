@@ -13,18 +13,18 @@ export interface Palette {
   onColorDim: string;
 }
 
-// Near-black surfaces, white text, a single red accent. Matches a minimal,
-// monochrome home screen.
+// Pure black, white text, one risk-colored accent. A calm, monochrome,
+// Nothing-inspired look.
 export const darkPalette: Palette = {
-  background: '#0A0A0B',
-  surface: '#151517',
-  surfaceAlt: '#222226',
+  background: '#000000',
+  surface: '#0F0F10',
+  surfaceAlt: '#1B1B1E',
   text: '#F4F4F5',
-  textDim: '#9B9BA1',
-  textFaint: '#5B5B61',
-  border: '#26262A',
+  textDim: '#8A8A8E',
+  textFaint: '#4C4C50',
+  border: '#222226',
   accent: '#FF3B30',
-  dotEmpty: '#34343A',
+  dotEmpty: '#2C2C31',
   onColor: '#FFFFFF',
   onColorDim: '#E8EAF0',
 };

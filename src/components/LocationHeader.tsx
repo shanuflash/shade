@@ -3,6 +3,7 @@ import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../theme/useTheme';
+import { fonts } from '../theme/fonts';
 import { font, radius, spacing, weight } from '../theme/tokens';
 
 interface Props {
@@ -66,6 +67,7 @@ const styles = StyleSheet.create({
   },
   label: {
     flex: 1,
+    fontFamily: fonts.display,
     fontSize: font.body,
     fontWeight: weight.semibold,
   },

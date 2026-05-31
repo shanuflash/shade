@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Card } from '../src/components/Card';
 import { useSettings, type ThemePref } from '../src/state/settingsStore';
 import { useTheme } from '../src/theme/useTheme';
+import { fonts } from '../src/theme/fonts';
 import { font, radius, spacing, weight } from '../src/theme/tokens';
 
 const THEME_OPTIONS: { value: ThemePref; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   title: {
+    fontFamily: fonts.display,
     fontSize: font.h2,
     fontWeight: weight.bold,
   },

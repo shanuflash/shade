@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
 import { useTheme } from '../theme/useTheme';
-import { font, radius, spacing, weight } from '../theme/tokens';
+import { fonts } from '../theme/fonts';
+import { font, radius, spacing } from '../theme/tokens';
 
 interface CardProps {
   title?: string;
@@ -35,9 +36,9 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   title: {
+    fontFamily: fonts.display,
     fontSize: font.micro,
-    fontWeight: weight.bold,
-    letterSpacing: 0.8,
+    letterSpacing: 1.5,
     marginBottom: spacing.md,
   },
 });

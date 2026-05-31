@@ -3,19 +3,20 @@ import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { DotRow } from '../src/components/DotRow';
 import { HourlyForecast } from '../src/components/HourlyForecast';
 import { LocationHeader } from '../src/components/LocationHeader';
 import { PeakUvCard } from '../src/components/PeakUvCard';
 import { RecommendationCard } from '../src/components/RecommendationCard';
 import { SafeWindowsCard } from '../src/components/SafeWindowsCard';
 import { LoadingView, MessageView } from '../src/components/StateViews';
-import { UvGauge } from '../src/components/UvGauge';
 import { buildRecommendation } from '../src/domain/recommendations';
 import { useAutoLocation } from '../src/hooks/useAutoLocation';
 import { useForecast } from '../src/hooks/useForecast';
 import { useSettings } from '../src/state/settingsStore';
 import { useTheme } from '../src/theme/useTheme';
-import { font, radius, spacing, weight } from '../src/theme/tokens';
+import { fonts } from '../src/theme/fonts';
+import { font, spacing, weight } from '../src/theme/tokens';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -113,23 +114,19 @@ export default function HomeScreen() {
         {header}
 
         <View style={styles.hero}>
-          <UvGauge uv={data.currentUv} />
-          <View
-            style={[
-              styles.statusPill,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <View
-              style={[
-                styles.statusDot,
-                { backgroundColor: recommendation.safeNow ? '#3DBE6E' : recommendation.level.color },
-              ]}
-            />
-            <Text style={[styles.statusText, { color: colors.text }]}>
-              {recommendation.safeNow ? 'Safe outside now' : recommendation.level.shortTip}
-            </Text>
+          <Text style={[styles.heroCaption, { color: colors.textDim }]}>UV INDEX</Text>
+          <Text style={[styles.heroValue, { color: colors.text }]}>
+            {Math.round(data.currentUv)}
+          </Text>
+          <Text style={[styles.level, { color: colors.text }]}>
+            {recommendation.level.label.toUpperCase()}
+          </Text>
+          <View style={styles.bandRow}>
+            <DotRow filled={recommendation.level.index + 1} color={recommendation.level.color} size={9} />
           </View>
+          <Text style={[styles.tip, { color: colors.textDim }]}>
+            {recommendation.safeNow ? 'Safe outside now' : recommendation.level.shortTip}
+          </Text>
         </View>
 
         <RecommendationCard recommendation={recommendation} />
@@ -165,26 +162,34 @@ const styles = StyleSheet.create({
   },
   hero: {
     alignItems: 'center',
-    gap: spacing.lg,
-    paddingVertical: spacing.lg,
+    paddingVertical: spacing.xl,
   },
-  statusPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderRadius: radius.pill,
-    borderWidth: StyleSheet.hairlineWidth,
+  heroCaption: {
+    fontFamily: fonts.display,
+    fontSize: font.micro,
+    letterSpacing: 3,
+    marginBottom: spacing.md,
   },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+  heroValue: {
+    fontFamily: fonts.dot,
+    fontSize: 132,
+    lineHeight: 140,
+    includeFontPadding: false,
+    textAlign: 'center',
   },
-  statusText: {
+  level: {
+    fontFamily: fonts.display,
+    fontSize: font.title,
+    letterSpacing: 2,
+    marginTop: spacing.lg,
+  },
+  bandRow: {
+    marginTop: spacing.md,
+  },
+  tip: {
     fontSize: font.body,
-    fontWeight: weight.bold,
+    fontWeight: weight.medium,
+    marginTop: spacing.md,
   },
   attribution: {
     fontSize: font.micro,

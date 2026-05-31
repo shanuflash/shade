@@ -19,6 +19,7 @@ import { queryKeys } from '../src/data/keys';
 import { useAutoLocation } from '../src/hooks/useAutoLocation';
 import { useSettings } from '../src/state/settingsStore';
 import { useTheme } from '../src/theme/useTheme';
+import { fonts } from '../src/theme/fonts';
 import { font, radius, spacing, weight } from '../src/theme/tokens';
 
 export default function SearchScreen() {
@@ -128,6 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: {
+    fontFamily: fonts.display,
     fontSize: font.h2,
     fontWeight: weight.bold,
   },

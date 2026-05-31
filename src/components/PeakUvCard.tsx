@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import type { Forecast } from '../api/types';
 import { uvLevel } from '../domain/uvLevels';
 import { useTheme } from '../theme/useTheme';
+import { fonts } from '../theme/fonts';
 import { font, spacing, weight } from '../theme/tokens';
 import { clockLabel, hourLabel } from '../utils/time';
 import { Card } from './Card';
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   value: {
+    fontFamily: fonts.display,
     fontSize: font.h2,
     fontWeight: weight.heavy,
     marginTop: spacing.sm,
