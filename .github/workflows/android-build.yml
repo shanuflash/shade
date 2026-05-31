@@ -1,0 +1,56 @@
+name: Android Build
+
+# Builds an installable (debug-signed) APK on every push to the feature branch
+# and on manual dispatch. No EAS account or signing secrets required — the
+# artifact can be downloaded from the run and sideloaded onto a device.
+on:
+  push:
+    branches:
+      - claude/wizardly-ramanujan-LFrkU
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Generate native project (Expo prebuild)
+        run: npx expo prebuild --platform android --no-install
+
+      - name: Build debug APK
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shade-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

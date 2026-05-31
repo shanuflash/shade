@@ -1,0 +1,70 @@
+import * as Location from 'expo-location';
+import { useCallback, useEffect, useState } from 'react';
+
+import type { SavedLocation } from '../api/types';
+import { useSettings } from '../state/settingsStore';
+
+export type LocationStatus = 'idle' | 'loading' | 'granted' | 'denied' | 'error';
+
+function buildLabel(place: Location.LocationGeocodedAddress | undefined): string {
+  if (!place) return 'Current location';
+  return (
+    place.city ||
+    place.subregion ||
+    place.region ||
+    place.country ||
+    'Current location'
+  );
+}
+
+/**
+ * Resolves the device location into the settings store when in 'auto' mode.
+ * Tries the cached last-known position first (fast, battery-friendly) before
+ * requesting a fresh fix.
+ */
+export function useAutoLocation() {
+  const mode = useSettings((s) => s.mode);
+  const setAutoLocation = useSettings((s) => s.setAutoLocation);
+  const [status, setStatus] = useState<LocationStatus>('idle');
+
+  const resolve = useCallback(async () => {
+    setStatus('loading');
+    try {
+      const { status: perm } = await Location.requestForegroundPermissionsAsync();
+      if (perm !== 'granted') {
+        setStatus('denied');
+        return;
+      }
+
+      const position =
+        (await Location.getLastKnownPositionAsync()) ??
+        (await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        }));
+
+      const { latitude, longitude } = position.coords;
+
+      let label = 'Current location';
+      try {
+        const places = await Location.reverseGeocodeAsync({ latitude, longitude });
+        label = buildLabel(places[0]);
+      } catch {
+        // Reverse geocoding is best-effort; keep the default label.
+      }
+
+      const loc: SavedLocation = { latitude, longitude, label };
+      setAutoLocation(loc);
+      setStatus('granted');
+    } catch {
+      setStatus('error');
+    }
+  }, [setAutoLocation]);
+
+  useEffect(() => {
+    if (mode === 'auto') {
+      void resolve();
+    }
+  }, [mode, resolve]);
+
+  return { status, resolve };
+}
