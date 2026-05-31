@@ -7,7 +7,7 @@ import { updateUvWidget } from '../widget/update';
 
 export const UV_REFRESH_TASK = 'shade-uv-refresh';
 
-// Defined at module scope so it is registered as soon as this file is imported.
+// Defined at module scope so it registers as soon as this file is imported.
 TaskManager.defineTask(UV_REFRESH_TASK, async () => {
   try {
     const location = await readLastLocation();
@@ -22,10 +22,8 @@ TaskManager.defineTask(UV_REFRESH_TASK, async () => {
   }
 });
 
-/**
- * Register the OS-scheduled periodic refresh (~30 min, clamped by Android).
- * Relies on WorkManager under the hood — no foreground polling, battery-friendly.
- */
+// Registers the OS-scheduled refresh (~30 min, clamped by Android). It runs on
+// WorkManager, so there is no foreground polling.
 export async function registerBackgroundRefresh(): Promise<void> {
   try {
     const status = await BackgroundTask.getStatusAsync();

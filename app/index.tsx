@@ -34,7 +34,7 @@ export default function HomeScreen() {
 
   const header = (
     <LocationHeader
-      label={location?.label ?? (mode === 'auto' ? 'Locating…' : 'Choose a city')}
+      label={location?.label ?? (mode === 'auto' ? 'Locating...' : 'Choose a city')}
       isAuto={mode === 'auto'}
       refreshing={isFetching}
       onSearch={() => router.push('/search')}
@@ -56,7 +56,7 @@ export default function HomeScreen() {
             onAction={() => router.push('/search')}
           />
         ) : (
-          <LoadingView message="Finding your location…" />
+          <LoadingView message="Finding your location..." />
         )}
       </Screen>
     );
@@ -66,7 +66,7 @@ export default function HomeScreen() {
     return (
       <Screen insetsTop={insets.top}>
         {header}
-        <LoadingView message="Loading UV forecast…" />
+        <LoadingView message="Loading UV forecast..." />
       </Screen>
     );
   }

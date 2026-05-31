@@ -14,7 +14,6 @@ interface GeocodingResponse {
   }[];
 }
 
-/** Search cities by name via Open-Meteo's free geocoding API. */
 export async function searchCities(query: string): Promise<CityResult[]> {
   const q = query.trim();
   if (q.length < 2) return [];
@@ -35,7 +34,6 @@ export async function searchCities(query: string): Promise<CityResult[]> {
   }));
 }
 
-/** Compact human label like "Chennai, Tamil Nadu, India". */
 export function cityLabel(c: Pick<CityResult, 'name' | 'admin1' | 'country'>): string {
   return [c.name, c.admin1, c.country].filter(Boolean).join(', ');
 }

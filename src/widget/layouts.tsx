@@ -31,7 +31,7 @@ function Empty({ radius }: { radius: number }) {
   );
 }
 
-/** 1x1 — color-coded square with just the current UV number. */
+// 1x1: color-coded square with just the current UV number.
 export function UvSmall({ data }: WidgetProps) {
   if (!data) return <Empty radius={18} />;
   const level = uvLevel(data.forecast.currentUv);
@@ -58,7 +58,7 @@ export function UvSmall({ data }: WidgetProps) {
   );
 }
 
-/** 2x2 — UV number, risk label, and today's max. */
+// 2x2: UV number, risk label, and today's max.
 export function UvMedium({ data }: WidgetProps) {
   if (!data) return <Empty radius={20} />;
   const level = uvLevel(data.forecast.currentUv);
@@ -89,7 +89,7 @@ export function UvMedium({ data }: WidgetProps) {
   );
 }
 
-/** 4x2 — rich card: location, big UV, risk, protection tip, today's max. */
+// 4x2: location, large UV number, risk label, protection tip, today's max.
 export function UvLarge({ data }: WidgetProps) {
   if (!data) return <Empty radius={22} />;
   const level = uvLevel(data.forecast.currentUv);
@@ -148,7 +148,7 @@ export function UvLarge({ data }: WidgetProps) {
   );
 }
 
-/** 4x1 — thin strip: location · UV number · short tip on one line. */
+// 4x1: thin strip with the UV number and a short tip on one line.
 export function UvStrip({ data }: WidgetProps) {
   if (!data) return <Empty radius={18} />;
   const level = uvLevel(data.forecast.currentUv);
@@ -184,7 +184,7 @@ export function UvStrip({ data }: WidgetProps) {
   );
 }
 
-/** Maps the Android widget name (from app.json) to its layout component. */
+// Maps each Android widget name (declared in app.json) to its layout.
 export const widgetComponents: Record<string, React.FC<WidgetProps>> = {
   UvSmall,
   UvMedium,

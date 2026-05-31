@@ -10,8 +10,8 @@ export interface ContextTip {
 }
 
 export interface SafeWindow {
-  start: string; // local ISO
-  end: string; // local ISO
+  start: string;
+  end: string;
   startLabel: string;
   endLabel: string;
 }
@@ -23,12 +23,10 @@ export interface Recommendation {
   safeWindows: SafeWindow[];
 }
 
-const LOW_UV = 3; // below this = "low" band
+const LOW_UV = 3;
 
-/**
- * Find contiguous daylight hours where UV stays in the low band — genuinely
- * safer windows to be outside (typically morning and late afternoon).
- */
+// Contiguous daylight hours where UV stays in the low band (typically early
+// morning and late afternoon).
 export function findSafeWindows(forecast: Forecast): SafeWindow[] {
   const { todayHourly, sunrise, sunset, currentTime } = forecast;
   if (!sunrise || !sunset) return [];
@@ -65,18 +63,17 @@ export function findSafeWindows(forecast: Forecast): SafeWindow[] {
   }
   flush();
 
-  // Only surface windows that haven't fully passed yet.
+  // Drop windows that have already fully passed.
   return windows.filter((w) => w.end.slice(0, 13) >= nowHourKey).slice(0, 2);
 }
 
-/** Build the full set of context-aware tips for the current forecast. */
 export function buildRecommendation(forecast: Forecast): Recommendation {
   const level = uvLevel(forecast.currentUv);
   const safeNow = isSafeNow(forecast.currentUv);
   const tips: ContextTip[] = [];
   const today = dayOf(forecast.currentTime);
 
-  // 1. High UV despite cloud cover.
+  // High UV even under heavy cloud cover.
   if (
     forecast.currentUv >= LOW_UV &&
     forecast.currentCloudCover != null &&
@@ -87,11 +84,11 @@ export function buildRecommendation(forecast: Forecast): Recommendation {
       icon: 'cloud-outline',
       text: `UV is still ${level.label.toLowerCase()} despite ${Math.round(
         forecast.currentCloudCover,
-      )}% cloud cover — clouds don't block all UV.`,
+      )}% cloud cover. Clouds don't block all UV.`,
     });
   }
 
-  // 2. UV dropping as sunset approaches.
+  // UV easing as sunset approaches.
   if (forecast.sunset && dayOf(forecast.sunset) === today) {
     const toSunset = minutesBetween(forecast.currentTime, forecast.sunset);
     if (toSunset > 0 && toSunset <= 150 && forecast.currentUv >= LOW_UV) {
@@ -103,7 +100,7 @@ export function buildRecommendation(forecast: Forecast): Recommendation {
     }
   }
 
-  // 3. Peak UV ahead — plan around it.
+  // Peak UV still ahead today.
   if (
     forecast.todayPeakTime &&
     forecast.todayPeakTime.slice(0, 13) > forecast.currentTime.slice(0, 13) &&
@@ -112,13 +109,13 @@ export function buildRecommendation(forecast: Forecast): Recommendation {
     tips.push({
       id: 'peak',
       icon: 'trending-up-outline',
-      text: `Peak UV of ${Math.round(forecast.todayMaxUv)} expected around ${hourLabel(
+      text: `Peak UV of ${Math.round(forecast.todayMaxUv)} around ${hourLabel(
         forecast.todayPeakTime,
-      )} — limit sun exposure then.`,
+      )}. Limit sun exposure then.`,
     });
   }
 
-  // 4. Outdoor activity suggestion based on safe windows.
+  // Outdoor suggestion based on safe windows.
   const safeWindows = findSafeWindows(forecast);
   if (safeNow) {
     tips.push({
@@ -131,7 +128,7 @@ export function buildRecommendation(forecast: Forecast): Recommendation {
     tips.push({
       id: 'outdoor-window',
       icon: 'time-outline',
-      text: `Safer outdoors ${w.startLabel}–${w.endLabel} when UV is low.`,
+      text: `Safer outdoors ${w.startLabel} to ${w.endLabel} when UV is low.`,
     });
   }
 

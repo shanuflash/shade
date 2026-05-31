@@ -9,7 +9,6 @@ export class ApiError extends Error {
   }
 }
 
-/** Fetch JSON with a timeout and typed errors. No API key needed for Open-Meteo. */
 export async function fetchJson<T>(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);

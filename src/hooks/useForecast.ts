@@ -7,11 +7,8 @@ import { queryKeys } from '../data/keys';
 import { effectiveLocation, useSettings } from '../state/settingsStore';
 import { updateUvWidget } from '../widget/update';
 
-/**
- * Fetches the UV forecast for the active location (auto or manual).
- * On every successful fetch it writes the shared cache and refreshes the
- * home-screen widget — no polling, just revalidation on a 30-minute staleTime.
- */
+// Fetches the forecast for the active location and, on each success, updates
+// the shared cache and the home-screen widgets.
 export function useForecast() {
   const location = useSettings(effectiveLocation);
 

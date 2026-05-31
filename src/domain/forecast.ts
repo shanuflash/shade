@@ -3,10 +3,6 @@ import { dayOf } from '../utils/time';
 
 const MAX_UPCOMING_HOURS = 24;
 
-/**
- * Normalize a raw Open-Meteo response into the app's domain `Forecast`.
- * Throws if the response is missing the data we depend on.
- */
 export function normalizeForecast(res: OpenMeteoForecastResponse): Forecast {
   const { current, hourly, daily } = res;
   if (!current || !hourly || !daily) {
@@ -24,17 +20,14 @@ export function normalizeForecast(res: OpenMeteoForecastResponse): Forecast {
   const today = dayOf(currentTime);
   const currentHourKey = currentTime.slice(0, 13); // "YYYY-MM-DDTHH"
 
-  // Upcoming hours: from the current hour onward.
   const upcoming = points
     .filter((p) => p.time.slice(0, 13) >= currentHourKey)
     .slice(0, MAX_UPCOMING_HOURS);
 
-  // All of today's hours (for peak + safe windows).
   const todayHourly = points.filter((p) => dayOf(p.time) === today);
-
   const currentPoint = points.find((p) => p.time.slice(0, 13) === currentHourKey);
 
-  // Today's peak from the hourly series (more precise than daily max alone).
+  // Peak from the hourly series is more precise than the daily max alone.
   let peak: HourlyPoint | null = null;
   for (const p of todayHourly) {
     if (!peak || p.uv > peak.uv) peak = p;

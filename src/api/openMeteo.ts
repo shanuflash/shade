@@ -4,10 +4,6 @@ import type { Forecast, OpenMeteoForecastResponse } from './types';
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
 
-/**
- * Fetch and normalize the UV forecast for a coordinate.
- * Requests exactly the fields the app needs to keep payloads small.
- */
 export async function getForecast(latitude: number, longitude: number): Promise<Forecast> {
   const url = buildUrl(FORECAST_URL, {
     latitude: latitude.toFixed(4),

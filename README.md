@@ -1,83 +1,85 @@
-# Shade — Live UV Index Tracker
+# Shade
 
-Shade is an Android-first Expo (React Native) app for live UV index tracking and
-sun-protection guidance. It shows the current UV, an hourly forecast, today's peak
-UV and time, context-aware safety recommendations, and a color-coded home-screen
-widget — all powered by the free [Open-Meteo](https://open-meteo.com) API with no
-backend.
+An Android UV index app built with Expo and React Native. It shows the current
+UV, an hourly forecast, today's peak, and what protection you need, plus
+home-screen widgets in four sizes. Data comes from the free
+[Open-Meteo](https://open-meteo.com) API. There is no backend.
 
 ## Features
 
-- **Current UV index** with an animated, color-coded gauge.
-- **Hourly UV forecast** and **today's peak UV + peak time**.
-- **Context-aware recommendations** — high UV despite cloud cover, safer outdoor
-  windows, UV dropping near sunset, and outdoor-activity suggestions.
-- **Home-screen widget** (color-coded risk, current UV, today's max, quick tip,
-  "Safe outside now" status).
-- **Auto location** (with permission) and **manual city search**.
-- **Offline-friendly caching** and **battery-efficient background refresh**.
-- Minimal, modern UI with first-class **dark mode**.
+- Current UV index on an animated, color-coded gauge
+- Hourly forecast and today's peak UV with the time it hits
+- Protection advice per UV band, with extra tips for cloud cover, sunset, and
+  safer time windows
+- Home-screen widgets: 1x1, 2x2, 4x2, and 4x1
+- Automatic location or manual city search
+- Local caching and background refresh, so it works offline and stays light on
+  battery
+- Light and dark themes
 
-## Tech stack
+## Stack
 
-| Concern            | Choice |
-| ------------------ | ------ |
-| Framework          | Expo SDK 56 (React Native, New Architecture), TypeScript |
-| Navigation         | expo-router (file-based) |
-| Data fetching      | TanStack Query (persisted to AsyncStorage) |
-| Local state        | Zustand (persisted) |
-| Weather/UV data    | Open-Meteo `/v1/forecast` + geocoding API |
-| Location           | expo-location |
-| Background refresh  | expo-background-task (WorkManager under the hood) |
-| Widget             | react-native-android-widget (config plugin) |
-| Animations/visuals | react-native-reanimated, react-native-svg |
+- Expo SDK 56, React Native (New Architecture), TypeScript
+- expo-router for navigation
+- TanStack Query for data, persisted to AsyncStorage
+- Zustand for settings
+- expo-location for location
+- expo-background-task for periodic refresh
+- react-native-android-widget for the widgets
+- react-native-reanimated and react-native-svg for the gauge
 
-## Architecture
+## Layout
 
 ```
-app/                 expo-router screens (index, search, settings)
+app/                 screens: index, search, settings
 src/
-  api/               Open-Meteo forecast + geocoding + fetch client
-  domain/            UV bands, recommendation logic, forecast normalization (pure)
-  data/              query client + persistence, shared widget cache, query keys
-  state/             zustand settings store
+  api/               Open-Meteo forecast, geocoding, fetch client
+  domain/            UV bands, recommendation logic, forecast parsing
+  data/              query client, shared widget cache, query keys
+  state/             settings store
   hooks/             useForecast, useAutoLocation
   theme/             tokens, palettes, useTheme
   components/        gauge, cards, header, state views
-  widget/            widget UI + task handler + update helper
-  tasks/             background refresh task
-  utils/             local-time helpers
-index.js             registers the widget task handler, then expo-router entry
+  widget/            widget layouts, task handler, update helper
+  tasks/             background refresh
+  utils/             time helpers
+index.js             registers the widget handler, then expo-router
 ```
 
-**Caching strategy.** TanStack Query keeps forecasts fresh for 30 minutes and
-persists them to AsyncStorage so the last reading shows instantly on launch. Every
-successful fetch also writes a compact shared cache (`src/data/cache.ts`) that both
-the widget's headless task and the background refresh task read — a single source of
-truth across the app and the widget.
+## How data flows
 
-**Background refresh.** A `expo-background-task` job (~30-min OS-scheduled interval)
-refreshes the active location's UV in the background, updates the shared cache, and
-pushes a widget update. No foreground polling.
+A forecast is fetched for the active location and cached for 30 minutes. TanStack
+Query persists it to AsyncStorage, so the last reading shows immediately on the
+next launch. Each successful fetch also writes a small payload to
+`src/data/cache.ts`, which the widgets and the background task read. That keeps
+the app and the widgets showing the same numbers.
 
-## Running locally
+The background task (`src/tasks/backgroundRefresh.ts`) runs roughly every 30
+minutes via Android WorkManager. It refreshes the cache and updates the widgets.
+There is no foreground polling.
 
-> Requires a custom dev build (the widget + background task use native modules, so
-> Expo Go is not sufficient).
+## Running it
+
+The widgets and background task need native modules, so Expo Go won't work. Build
+a dev client:
 
 ```bash
 npm install
-npx expo run:android   # builds and installs a dev client on a device/emulator
+npx expo run:android
 ```
 
-Then long-press the home screen → Widgets → **Shade UV Index** to add the widget.
+To add a widget, long-press the home screen, open Widgets, and pick a Shade size.
 
-## CI builds (no local Android setup needed)
+## Building an APK without Android Studio
 
-Every push to the feature branch runs `.github/workflows/android-build.yml`, which
-runs `expo prebuild`, builds a debug-signed APK with Gradle, and uploads it as the
-`shade-debug-apk` artifact. Download it from the workflow run and sideload it onto a
-device.
+`.github/workflows/android-build.yml` builds the app in CI. Pushes to `main`
+build an APK and upload it as a run artifact. Pushing a version tag (for example
+`v0.1.0`) also publishes a GitHub Release with the APK attached. You can also
+trigger a release from the Actions tab using Run workflow and a version input.
+
+The release APK is signed with the debug keystore, so it installs on any device
+without extra setup. For releases to work, set Settings > Actions > General >
+Workflow permissions to "Read and write permissions".
 
 ## Scripts
 
@@ -87,6 +89,7 @@ npm run lint        # expo lint
 npm run prebuild    # generate the native android/ project
 ```
 
-## Attribution
+## Data
 
-Weather and UV data by [Open-Meteo.com](https://open-meteo.com) (CC BY 4.0).
+Weather and UV data from [Open-Meteo](https://open-meteo.com), used under their
+free tier for non-commercial apps (CC BY 4.0).
