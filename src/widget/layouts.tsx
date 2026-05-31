@@ -12,6 +12,8 @@ const BG = '#151517';
 const WHITE = '#F4F4F5';
 const DIM = '#9B9BA1';
 const DOT_EMPTY = '#34343A';
+// Matches the file base name registered in the widget plugin's `fonts` list.
+const DOT_FONT = 'Ndot55-Regular';
 
 type Hex = `#${string}`;
 
@@ -76,7 +78,7 @@ export function UvSmall({ data }: WidgetProps) {
       />
       <TextWidget
         text={`${Math.round(data.forecast.currentUv)}`}
-        style={{ color: WHITE, fontSize: 34, fontWeight: '800' }}
+        style={{ color: WHITE, fontSize: 40, fontFamily: DOT_FONT }}
       />
       <TextWidget
         text="UV"
@@ -106,7 +108,7 @@ export function UvMedium({ data }: WidgetProps) {
     >
       <TextWidget
         text={`${Math.round(data.forecast.currentUv)}`}
-        style={{ color: WHITE, fontSize: 46, fontWeight: '800' }}
+        style={{ color: WHITE, fontSize: 54, fontFamily: DOT_FONT }}
       />
       <TextWidget
         text={level.label}
@@ -148,7 +150,7 @@ export function UvLarge({ data }: WidgetProps) {
       <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
         <TextWidget
           text={`${Math.round(data.forecast.currentUv)}`}
-          style={{ color: WHITE, fontSize: 46, fontWeight: '800' }}
+          style={{ color: WHITE, fontSize: 54, fontFamily: DOT_FONT }}
         />
         <TextWidget
           text="UV"
@@ -191,7 +193,7 @@ export function UvStrip({ data }: WidgetProps) {
       <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TextWidget
           text={`${Math.round(data.forecast.currentUv)}`}
-          style={{ color: WHITE, fontSize: 22, fontWeight: '800' }}
+          style={{ color: WHITE, fontSize: 28, fontFamily: DOT_FONT }}
         />
         <TextWidget text="UV" style={{ color: DIM, fontSize: 11, fontWeight: '700', marginLeft: 4 }} />
         <FlexWidget style={{ marginLeft: 10 }}>

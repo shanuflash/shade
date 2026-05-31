@@ -40,6 +40,10 @@
       [
         "react-native-android-widget",
         {
+          "fonts": [
+            "./assets/fonts/Ndot55-Regular.otf",
+            "./assets/fonts/NType82-Headline.otf"
+          ],
           "widgets": [
             {
               "name": "UvSmall",
