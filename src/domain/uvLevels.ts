@@ -7,6 +7,8 @@ export type HexColor = `#${string}`;
 
 export interface UvLevel {
   category: UvCategory;
+  /** 0-4, used to fill the dot indicators (band N of 5). */
+  index: number;
   label: string;
   range: string;
   color: HexColor;
@@ -18,6 +20,7 @@ export interface UvLevel {
 const LEVELS: UvLevel[] = [
   {
     category: 'low',
+    index: 0,
     label: 'Low',
     range: '0-2',
     color: '#3DBE6E',
@@ -30,6 +33,7 @@ const LEVELS: UvLevel[] = [
   },
   {
     category: 'moderate',
+    index: 1,
     label: 'Moderate',
     range: '3-5',
     color: '#F2C200',
@@ -43,6 +47,7 @@ const LEVELS: UvLevel[] = [
   },
   {
     category: 'high',
+    index: 2,
     label: 'High',
     range: '6-7',
     color: '#F58518',
@@ -56,6 +61,7 @@ const LEVELS: UvLevel[] = [
   },
   {
     category: 'veryHigh',
+    index: 3,
     label: 'Very High',
     range: '8-10',
     color: '#EF4444',
@@ -69,6 +75,7 @@ const LEVELS: UvLevel[] = [
   },
   {
     category: 'extreme',
+    index: 4,
     label: 'Extreme',
     range: '11+',
     color: '#A855F7',

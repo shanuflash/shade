@@ -8,9 +8,31 @@ export interface WidgetProps {
   data: CachedForecast | null;
 }
 
-const WHITE = '#FFFFFF';
-const WHITE_DIM = '#E8EAF0';
-const EMPTY_BG = '#0B1120';
+const BG = '#151517';
+const WHITE = '#F4F4F5';
+const DIM = '#9B9BA1';
+const DOT_EMPTY = '#34343A';
+
+type Hex = `#${string}`;
+
+function Dots({ filled, color, size = 6 }: { filled: number; color: Hex; size?: number }) {
+  return (
+    <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <FlexWidget
+          key={i}
+          style={{
+            width: size,
+            height: size,
+            borderRadius: size / 2,
+            backgroundColor: i < filled ? color : DOT_EMPTY,
+            marginRight: i < 4 ? 4 : 0,
+          }}
+        />
+      ))}
+    </FlexWidget>
+  );
+}
 
 function Empty({ radius }: { radius: number }) {
   return (
@@ -19,7 +41,7 @@ function Empty({ radius }: { radius: number }) {
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: EMPTY_BG,
+        backgroundColor: BG,
         borderRadius: radius,
         justifyContent: 'center',
         alignItems: 'center',
@@ -31,9 +53,9 @@ function Empty({ radius }: { radius: number }) {
   );
 }
 
-// 1x1: color-coded square with just the current UV number.
+// 1x1: round tile with the UV number and a dot indicator.
 export function UvSmall({ data }: WidgetProps) {
-  if (!data) return <Empty radius={18} />;
+  if (!data) return <Empty radius={60} />;
   const level = uvLevel(data.forecast.currentUv);
   return (
     <FlexWidget
@@ -41,8 +63,8 @@ export function UvSmall({ data }: WidgetProps) {
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: level.colorDark,
-        borderRadius: 18,
+        backgroundColor: BG,
+        borderRadius: 60,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
@@ -53,14 +75,16 @@ export function UvSmall({ data }: WidgetProps) {
         text={`${Math.round(data.forecast.currentUv)}`}
         style={{ color: WHITE, fontSize: 30, fontWeight: '800' }}
       />
-      <TextWidget text="UV" style={{ color: WHITE_DIM, fontSize: 11, fontWeight: '700' }} />
+      <FlexWidget style={{ marginTop: 5 }}>
+        <Dots filled={level.index + 1} color={level.color} size={5} />
+      </FlexWidget>
     </FlexWidget>
   );
 }
 
-// 2x2: UV number, risk label, and today's max.
+// 2x2: UV number, risk label, and dot indicator.
 export function UvMedium({ data }: WidgetProps) {
-  if (!data) return <Empty radius={20} />;
+  if (!data) return <Empty radius={26} />;
   const level = uvLevel(data.forecast.currentUv);
   return (
     <FlexWidget
@@ -68,8 +92,8 @@ export function UvMedium({ data }: WidgetProps) {
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: level.colorDark,
-        borderRadius: 20,
+        backgroundColor: BG,
+        borderRadius: 26,
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
@@ -78,20 +102,20 @@ export function UvMedium({ data }: WidgetProps) {
     >
       <TextWidget
         text={`${Math.round(data.forecast.currentUv)}`}
-        style={{ color: WHITE, fontSize: 48, fontWeight: '800' }}
+        style={{ color: WHITE, fontSize: 46, fontWeight: '800' }}
       />
-      <TextWidget text={level.label} style={{ color: WHITE, fontSize: 14, fontWeight: '700' }} />
       <TextWidget
-        text={`Max ${Math.round(data.forecast.todayMaxUv)}`}
-        style={{ color: WHITE_DIM, fontSize: 12, fontWeight: '600', marginTop: 2 }}
+        text={level.label}
+        style={{ color: WHITE, fontSize: 13, fontWeight: '700', marginBottom: 8 }}
       />
+      <Dots filled={level.index + 1} color={level.color} size={7} />
     </FlexWidget>
   );
 }
 
-// 4x2: location, large UV number, risk label, protection tip, today's max.
+// 4x2: location, large UV number, dot indicator, protection tip, today's max.
 export function UvLarge({ data }: WidgetProps) {
-  if (!data) return <Empty radius={22} />;
+  if (!data) return <Empty radius={28} />;
   const level = uvLevel(data.forecast.currentUv);
   const safe = isSafeNow(data.forecast.currentUv);
   return (
@@ -100,20 +124,17 @@ export function UvLarge({ data }: WidgetProps) {
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: level.colorDark,
-        borderRadius: 22,
+        backgroundColor: BG,
+        borderRadius: 28,
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: 14,
+        padding: 16,
       }}
     >
       <FlexWidget
         style={{ flexDirection: 'row', width: 'match_parent', justifyContent: 'space-between' }}
       >
-        <TextWidget
-          text={data.location.label}
-          style={{ color: WHITE, fontSize: 13, fontWeight: '600' }}
-        />
+        <TextWidget text={data.location.label} style={{ color: DIM, fontSize: 13, fontWeight: '600' }} />
         <TextWidget
           text={safe ? 'Safe now' : level.label}
           style={{ color: WHITE, fontSize: 12, fontWeight: '700' }}
@@ -123,34 +144,31 @@ export function UvLarge({ data }: WidgetProps) {
       <FlexWidget style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
         <TextWidget
           text={`${Math.round(data.forecast.currentUv)}`}
-          style={{ color: WHITE, fontSize: 44, fontWeight: '800' }}
+          style={{ color: WHITE, fontSize: 46, fontWeight: '800' }}
         />
         <TextWidget
           text="UV"
-          style={{
-            color: WHITE_DIM,
-            fontSize: 15,
-            fontWeight: '700',
-            marginBottom: 8,
-            marginLeft: 4,
-          }}
+          style={{ color: DIM, fontSize: 15, fontWeight: '700', marginBottom: 9, marginLeft: 5 }}
         />
+        <FlexWidget style={{ marginBottom: 14, marginLeft: 12 }}>
+          <Dots filled={level.index + 1} color={level.color} size={7} />
+        </FlexWidget>
       </FlexWidget>
 
       <FlexWidget style={{ flexDirection: 'column', width: 'match_parent' }}>
         <TextWidget text={level.shortTip} style={{ color: WHITE, fontSize: 13, fontWeight: '600' }} />
         <TextWidget
           text={`Today's max ${Math.round(data.forecast.todayMaxUv)}`}
-          style={{ color: WHITE_DIM, fontSize: 12, marginTop: 2 }}
+          style={{ color: DIM, fontSize: 12, marginTop: 2 }}
         />
       </FlexWidget>
     </FlexWidget>
   );
 }
 
-// 4x1: thin strip with the UV number and a short tip on one line.
+// 4x1: UV number, dot indicator, and a short tip on one line.
 export function UvStrip({ data }: WidgetProps) {
-  if (!data) return <Empty radius={18} />;
+  if (!data) return <Empty radius={24} />;
   const level = uvLevel(data.forecast.currentUv);
   return (
     <FlexWidget
@@ -158,12 +176,12 @@ export function UvStrip({ data }: WidgetProps) {
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: level.colorDark,
-        borderRadius: 18,
+        backgroundColor: BG,
+        borderRadius: 24,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 14,
+        paddingHorizontal: 16,
       }}
     >
       <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -171,15 +189,12 @@ export function UvStrip({ data }: WidgetProps) {
           text={`${Math.round(data.forecast.currentUv)}`}
           style={{ color: WHITE, fontSize: 22, fontWeight: '800' }}
         />
-        <TextWidget
-          text="UV"
-          style={{ color: WHITE_DIM, fontSize: 11, fontWeight: '700', marginLeft: 3 }}
-        />
+        <TextWidget text="UV" style={{ color: DIM, fontSize: 11, fontWeight: '700', marginLeft: 4 }} />
+        <FlexWidget style={{ marginLeft: 10 }}>
+          <Dots filled={level.index + 1} color={level.color} size={6} />
+        </FlexWidget>
       </FlexWidget>
-      <TextWidget
-        text={level.shortTip}
-        style={{ color: WHITE, fontSize: 12, fontWeight: '600' }}
-      />
+      <TextWidget text={level.shortTip} style={{ color: WHITE, fontSize: 12, fontWeight: '600' }} />
     </FlexWidget>
   );
 }

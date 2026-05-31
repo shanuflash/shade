@@ -4,8 +4,9 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Recommendation } from '../domain/recommendations';
 import { useTheme } from '../theme/useTheme';
-import { font, radius, spacing, weight } from '../theme/tokens';
+import { font, spacing, weight } from '../theme/tokens';
 import { Card } from './Card';
+import { DotRow } from './DotRow';
 
 interface Props {
   recommendation: Recommendation;
@@ -17,16 +18,12 @@ export function RecommendationCard({ recommendation }: Props) {
 
   return (
     <Card title="Protection">
-      <View style={styles.header}>
-        <View style={[styles.badge, { backgroundColor: level.color }]}>
-          <Ionicons name="shield-checkmark" size={18} color="#FFFFFF" />
-        </View>
-        <View style={styles.headerText}>
-          <Text style={[styles.tip, { color: colors.text }]}>{level.shortTip}</Text>
-          <Text style={[styles.range, { color: colors.textDim }]}>
-            {level.label} · UV {level.range}
-          </Text>
-        </View>
+      <Text style={[styles.tip, { color: colors.text }]}>{level.shortTip}</Text>
+      <View style={styles.metaRow}>
+        <DotRow filled={level.index + 1} color={level.color} size={8} />
+        <Text style={[styles.range, { color: colors.textDim }]}>
+          {level.label} · UV {level.range}
+        </Text>
       </View>
 
       <View style={styles.advice}>
@@ -53,29 +50,19 @@ export function RecommendationCard({ recommendation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  badge: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerText: {
-    flex: 1,
-  },
   tip: {
     fontSize: font.title,
     fontWeight: weight.bold,
   },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginTop: spacing.sm,
+  },
   range: {
     fontSize: font.caption,
     fontWeight: weight.medium,
-    marginTop: 1,
   },
   advice: {
     marginTop: spacing.lg,

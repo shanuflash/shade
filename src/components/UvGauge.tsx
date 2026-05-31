@@ -1,83 +1,63 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated, {
-  useAnimatedProps,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
 import { uvLevel } from '../domain/uvLevels';
 import { useTheme } from '../theme/useTheme';
 import { font, weight } from '../theme/tokens';
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-
-const SIZE = 220;
-const STROKE = 18;
-const RADIUS = (SIZE - STROKE) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-const ARC = 0.75; // 270° gauge
-const ARC_LEN = CIRCUMFERENCE * ARC;
+const SIZE = 224;
+const CENTER = SIZE / 2;
+const RING_RADIUS = 96;
+const DOT_RADIUS = 3.6;
+const DOT_COUNT = 40;
+const START_DEG = 135; // opens at the bottom
+const SWEEP_DEG = 270;
 const MAX_UV = 11;
 
 interface Props {
   uv: number;
 }
 
+// A ring of dots that lights up in proportion to the UV value, with the number
+// in the middle. The lit dots use the risk color.
 export function UvGauge({ uv }: Props) {
   const { colors } = useTheme();
   const level = uvLevel(uv);
   const fraction = Math.max(0, Math.min(1, uv / MAX_UV));
+  const lit = Math.round(fraction * DOT_COUNT);
 
-  const progress = useSharedValue(0);
-  useEffect(() => {
-    progress.value = withTiming(fraction, { duration: 900 });
-  }, [fraction, progress]);
-
-  const animatedProps = useAnimatedProps(() => ({
-    strokeDashoffset: ARC_LEN * (1 - progress.value),
-  }));
+  const dots = Array.from({ length: DOT_COUNT }).map((_, i) => {
+    const t = i / (DOT_COUNT - 1);
+    const rad = ((START_DEG + t * SWEEP_DEG) * Math.PI) / 180;
+    return {
+      x: CENTER + RING_RADIUS * Math.cos(rad),
+      y: CENTER + RING_RADIUS * Math.sin(rad),
+      on: i < lit,
+    };
+  });
 
   return (
-    <View style={styles.wrap}>
+    <Animated.View entering={FadeIn.duration(450)} style={styles.wrap}>
       <Svg width={SIZE} height={SIZE}>
-        {/* Track */}
-        <Circle
-          cx={SIZE / 2}
-          cy={SIZE / 2}
-          r={RADIUS}
-          stroke={colors.surfaceAlt}
-          strokeWidth={STROKE}
-          strokeLinecap="round"
-          fill="none"
-          strokeDasharray={`${ARC_LEN} ${CIRCUMFERENCE}`}
-          // Rotate so the 270° arc opens at the bottom.
-          origin={`${SIZE / 2}, ${SIZE / 2}`}
-          rotation={135}
-        />
-        {/* Progress */}
-        <AnimatedCircle
-          cx={SIZE / 2}
-          cy={SIZE / 2}
-          r={RADIUS}
-          stroke={level.color}
-          strokeWidth={STROKE}
-          strokeLinecap="round"
-          fill="none"
-          strokeDasharray={`${ARC_LEN} ${CIRCUMFERENCE}`}
-          animatedProps={animatedProps}
-          origin={`${SIZE / 2}, ${SIZE / 2}`}
-          rotation={135}
-        />
+        {dots.map((d, i) => (
+          <Circle
+            key={i}
+            cx={d.x}
+            cy={d.y}
+            r={DOT_RADIUS}
+            fill={d.on ? level.color : colors.dotEmpty}
+          />
+        ))}
       </Svg>
 
       <View style={styles.center} pointerEvents="none">
         <Text style={[styles.value, { color: colors.text }]}>{Math.round(uv)}</Text>
         <Text style={[styles.label, { color: level.color }]}>{level.label}</Text>
-        <Text style={[styles.caption, { color: colors.textDim }]}>UV Index</Text>
+        <Text style={[styles.caption, { color: colors.textFaint }]}>UV INDEX</Text>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -108,8 +88,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   caption: {
-    fontSize: font.caption,
-    fontWeight: weight.medium,
-    marginTop: 2,
+    fontSize: font.micro,
+    fontWeight: weight.bold,
+    letterSpacing: 1.5,
+    marginTop: 4,
   },
 });

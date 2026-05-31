@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -118,17 +117,16 @@ export default function HomeScreen() {
           <View
             style={[
               styles.statusPill,
-              {
-                backgroundColor: recommendation.safeNow ? '#15351F' : recommendation.level.color,
-              },
+              { backgroundColor: colors.surface, borderColor: colors.border },
             ]}
           >
-            <Ionicons
-              name={recommendation.safeNow ? 'checkmark-circle' : 'warning'}
-              size={16}
-              color="#FFFFFF"
+            <View
+              style={[
+                styles.statusDot,
+                { backgroundColor: recommendation.safeNow ? '#3DBE6E' : recommendation.level.color },
+              ]}
             />
-            <Text style={styles.statusText}>
+            <Text style={[styles.statusText, { color: colors.text }]}>
               {recommendation.safeNow ? 'Safe outside now' : recommendation.level.shortTip}
             </Text>
           </View>
@@ -177,9 +175,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderRadius: radius.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   statusText: {
-    color: '#FFFFFF',
     fontSize: font.body,
     fontWeight: weight.bold,
   },
