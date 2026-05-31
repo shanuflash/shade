@@ -53,7 +53,7 @@ function Empty({ radius }: { radius: number }) {
   );
 }
 
-// 1x1: round tile with the UV number and a dot indicator.
+// 1x1: round black tile, white UV number with a single risk-colored dot above.
 export function UvSmall({ data }: WidgetProps) {
   if (!data) return <Empty radius={60} />;
   const level = uvLevel(data.forecast.currentUv);
@@ -71,13 +71,17 @@ export function UvSmall({ data }: WidgetProps) {
         padding: 4,
       }}
     >
+      <FlexWidget
+        style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: level.color, marginBottom: 5 }}
+      />
       <TextWidget
         text={`${Math.round(data.forecast.currentUv)}`}
-        style={{ color: WHITE, fontSize: 30, fontWeight: '800' }}
+        style={{ color: WHITE, fontSize: 34, fontWeight: '800' }}
       />
-      <FlexWidget style={{ marginTop: 5 }}>
-        <Dots filled={level.index + 1} color={level.color} size={5} />
-      </FlexWidget>
+      <TextWidget
+        text="UV"
+        style={{ color: DIM, fontSize: 10, fontWeight: '700', letterSpacing: 1, marginTop: 1 }}
+      />
     </FlexWidget>
   );
 }
