@@ -3,30 +3,31 @@ import { requestWidgetUpdate } from 'react-native-android-widget';
 
 import type { Forecast, SavedLocation } from '../api/types';
 import type { CachedForecast } from '../data/cache';
-import { UvWidget } from './UvWidget';
+import { widgetComponents, widgetNames } from './layouts';
 
-const WIDGET_NAME = 'Uv';
-
-/** Render the widget from a cached payload (shared by the task handler). */
-export function renderUvWidget(data: CachedForecast | null) {
-  return <UvWidget data={data} />;
+/** Render a widget by its Android name from a cached payload. */
+export function renderWidgetByName(name: string, data: CachedForecast | null) {
+  const Component = widgetComponents[name] ?? widgetComponents.UvSmall;
+  return <Component data={data} />;
 }
 
 /**
- * Push fresh data to any placed widgets. Safe to call even when no widget is
+ * Push fresh data to every placed widget size. Safe to call even when none are
  * on the home screen — the `widgetNotFound` branch simply no-ops.
  */
 export async function updateUvWidget(forecast: Forecast, location: SavedLocation) {
   const data: CachedForecast = { forecast, location, fetchedAt: Date.now() };
-  try {
-    await requestWidgetUpdate({
-      widgetName: WIDGET_NAME,
-      renderWidget: () => renderUvWidget(data),
-      widgetNotFound: () => {
-        // No widget placed yet — nothing to update.
-      },
-    });
-  } catch {
-    // requestWidgetUpdate is Android-only; ignore failures on other platforms.
+  for (const name of widgetNames) {
+    try {
+      await requestWidgetUpdate({
+        widgetName: name,
+        renderWidget: () => renderWidgetByName(name, data),
+        widgetNotFound: () => {
+          // No widget of this size placed — nothing to update.
+        },
+      });
+    } catch {
+      // requestWidgetUpdate is Android-only; ignore failures elsewhere.
+    }
   }
 }

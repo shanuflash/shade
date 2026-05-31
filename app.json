@@ -42,9 +42,9 @@
         {
           "widgets": [
             {
-              "name": "Uv",
-              "label": "Shade UV Index",
-              "description": "Live UV index and protection tip for your location.",
+              "name": "UvSmall",
+              "label": "Shade UV (1×1)",
+              "description": "Current UV index at a glance.",
               "minWidth": "40dp",
               "minHeight": "40dp",
               "targetCellWidth": 1,
@@ -52,6 +52,42 @@
               "previewImage": "./assets/icon.png",
               "updatePeriodMillis": 1800000,
               "resizeMode": "none"
+            },
+            {
+              "name": "UvMedium",
+              "label": "Shade UV (2×2)",
+              "description": "UV index, risk level, and today's max.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/icon.png",
+              "updatePeriodMillis": 1800000,
+              "resizeMode": "none"
+            },
+            {
+              "name": "UvLarge",
+              "label": "Shade UV (4×2)",
+              "description": "Location, UV index, protection tip, and today's max.",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/icon.png",
+              "updatePeriodMillis": 1800000,
+              "resizeMode": "horizontal|vertical"
+            },
+            {
+              "name": "UvStrip",
+              "label": "Shade UV (4×1)",
+              "description": "Slim bar: UV index and quick tip.",
+              "minWidth": "250dp",
+              "minHeight": "40dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 1,
+              "previewImage": "./assets/icon.png",
+              "updatePeriodMillis": 1800000,
+              "resizeMode": "horizontal"
             }
           ]
         }
