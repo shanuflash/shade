@@ -1,9 +1,10 @@
 name: Android Build
 
 # Builds an installable (debug-signed) release APK. Pushes to main (and PRs)
-# build + upload the APK as a run artifact for validation. Pushing a version
-# tag (e.g. v1.2.0) additionally publishes a GitHub Release with the APK
-# attached. No EAS account or signing secrets required.
+# build + upload the APK as a run artifact for validation. A GitHub Release
+# with the APK attached is published either by pushing a version tag (e.g.
+# v1.2.0) OR by running this workflow manually with a "version" input.
+# No EAS account or signing secrets required.
 on:
   push:
     branches:
@@ -12,8 +13,13 @@ on:
       - 'v*'
   pull_request:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag to publish, e.g. v1.0.0 (leave blank for a build-only run).'
+        required: false
+        default: ''
 
-# Needed so a tag build can create the release with the default GITHUB_TOKEN.
+# Needed so a release build can create the tag/release with the default GITHUB_TOKEN.
 permissions:
   contents: write
 
@@ -58,16 +64,21 @@ jobs:
 
       - name: Prepare APK
         id: apk
+        env:
+          INPUT_VERSION: ${{ github.event.inputs.version }}
         run: |
           SRC=$(find android/app/build/outputs/apk/release -name '*.apk' | head -n1)
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
             NAME="${GITHUB_REF_NAME}"
+          elif [[ -n "${INPUT_VERSION}" ]]; then
+            NAME="${INPUT_VERSION}"
           else
             VERSION=$(node -p "require('./app.json').expo.version")
             NAME="v${VERSION}-build${{ github.run_number }}"
           fi
           DEST="shade-${NAME}.apk"
           cp "$SRC" "$DEST"
+          echo "release_tag=$NAME" >> "$GITHUB_OUTPUT"
           echo "path=$DEST" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK artifact
@@ -78,10 +89,12 @@ jobs:
           if-no-files-found: error
 
       - name: Publish GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.version != '')
         uses: softprops/action-gh-release@v2
         with:
-          name: Shade ${{ github.ref_name }}
+          tag_name: ${{ steps.apk.outputs.release_tag }}
+          target_commitish: ${{ github.sha }}
+          name: Shade ${{ steps.apk.outputs.release_tag }}
           generate_release_notes: true
           body: |
             Automated release build of Shade.
