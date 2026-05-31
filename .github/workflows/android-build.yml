@@ -1,18 +1,22 @@
 name: Android Build
 
-# Builds an installable (debug-signed) APK on every push to the feature branch
-# and on manual dispatch. No EAS account or signing secrets required — the
-# artifact can be downloaded from the run and sideloaded onto a device.
+# Builds an installable (debug-signed) release APK on every push to main and on
+# manual dispatch, uploads it as a run artifact, and publishes it as a GitHub
+# Release with the APK attached. No EAS account or signing secrets required.
 on:
   push:
     branches:
-      - claude/wizardly-ramanujan-LFrkU
+      - main
   pull_request:
   workflow_dispatch:
 
+# Needed so the workflow can create tags/releases with the default GITHUB_TOKEN.
+permissions:
+  contents: write
+
 jobs:
   build:
-    name: Build debug APK
+    name: Build release APK
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,9 +53,32 @@ jobs:
           chmod +x ./gradlew
           ./gradlew assembleRelease --no-daemon --stacktrace
 
+      - name: Prepare APK
+        id: apk
+        run: |
+          VERSION=$(node -p "require('./app.json').expo.version")
+          SRC=$(find android/app/build/outputs/apk/release -name '*.apk' | head -n1)
+          DEST="shade-v${VERSION}-build${{ github.run_number }}.apk"
+          cp "$SRC" "$DEST"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "path=$DEST" >> "$GITHUB_OUTPUT"
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: shade-release-apk
-          path: android/app/build/outputs/apk/release/*.apk
+          path: ${{ steps.apk.outputs.path }}
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.apk.outputs.version }}-build${{ github.run_number }}
+          name: Shade v${{ steps.apk.outputs.version }} (build ${{ github.run_number }})
+          body: |
+            Automated release build of Shade.
+
+            Download the `.apk` below and sideload it on Android
+            (enable "install from unknown sources" for your browser/Files app).
+          files: ${{ steps.apk.outputs.path }}
