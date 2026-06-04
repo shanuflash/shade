@@ -14,36 +14,43 @@ interface Props {
   onSettings: () => void;
 }
 
+function todayLabel(): string {
+  return new Date().toLocaleDateString(undefined, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
 export function LocationHeader({ label, isAuto, refreshing, onSearch, onSettings }: Props) {
   const { colors } = useTheme();
   return (
     <View style={styles.row}>
-      <Pressable
-        style={[styles.location, { backgroundColor: colors.surface, borderColor: colors.border }]}
-        onPress={onSearch}
-        hitSlop={6}
-      >
-        <Ionicons
-          name={isAuto ? 'location' : 'location-outline'}
-          size={16}
-          color={colors.accent}
-        />
-        <Text style={[styles.label, { color: colors.text }]} numberOfLines={1}>
-          {label}
-        </Text>
-        {refreshing ? (
-          <ActivityIndicator size="small" color={colors.textDim} />
-        ) : (
-          <Ionicons name="chevron-down" size={16} color={colors.textDim} />
-        )}
+      <Pressable style={styles.location} onPress={onSearch} hitSlop={8}>
+        <View style={styles.cityRow}>
+          <Ionicons
+            name={isAuto ? 'location' : 'location-outline'}
+            size={14}
+            color={colors.accent}
+          />
+          <Text style={[styles.city, { color: colors.text }]} numberOfLines={1}>
+            {label}
+          </Text>
+          {refreshing ? (
+            <ActivityIndicator size="small" color={colors.textDim} />
+          ) : (
+            <Ionicons name="chevron-down" size={14} color={colors.textDim} />
+          )}
+        </View>
+        <Text style={[styles.date, { color: colors.textFaint }]}>{todayLabel()}</Text>
       </Pressable>
 
       <Pressable
-        style={[styles.iconBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        style={[styles.iconBtn, { borderColor: colors.border }]}
         onPress={onSettings}
-        hitSlop={6}
+        hitSlop={8}
       >
-        <Ionicons name="settings-outline" size={18} color={colors.text} />
+        <Ionicons name="ellipsis-horizontal" size={18} color={colors.textDim} />
       </Pressable>
     </View>
   );
@@ -53,27 +60,31 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    justifyContent: 'space-between',
   },
   location: {
     flex: 1,
+    gap: 2,
+  },
+  cityRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    height: 44,
-    borderRadius: radius.pill,
-    borderWidth: StyleSheet.hairlineWidth,
   },
-  label: {
-    flex: 1,
-    fontFamily: fonts.display,
-    fontSize: font.body,
+  city: {
+    fontFamily: fonts.semibold,
+    fontSize: font.title,
     fontWeight: weight.semibold,
+    maxWidth: 220,
+  },
+  date: {
+    fontFamily: fonts.regular,
+    fontSize: font.caption,
+    marginLeft: 20,
   },
   iconBtn: {
-    width: 44,
-    height: 44,
+    width: 38,
+    height: 38,
     borderRadius: radius.pill,
     borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',

@@ -14,6 +14,8 @@ export interface UvLevel {
   color: HexColor;
   colorDark: HexColor;
   shortTip: string;
+  /** One-word imperative used as the editorial headline. */
+  headline: string;
   advice: string[];
 }
 
@@ -26,6 +28,7 @@ const LEVELS: UvLevel[] = [
     color: '#3DBE6E',
     colorDark: '#2C9E58',
     shortTip: 'Safe, no protection needed',
+    headline: "You're good.",
     advice: [
       'You can safely enjoy time outside.',
       'No sun protection required for most people.',
@@ -39,6 +42,7 @@ const LEVELS: UvLevel[] = [
     color: '#F2C200',
     colorDark: '#D6A900',
     shortTip: 'Sunscreen recommended',
+    headline: 'Ease in.',
     advice: [
       'Apply SPF 30 sunscreen on exposed skin.',
       'Seek shade around midday.',
@@ -53,6 +57,7 @@ const LEVELS: UvLevel[] = [
     color: '#F58518',
     colorDark: '#D86F0C',
     shortTip: 'SPF 30+ and sunglasses',
+    headline: 'Cover up.',
     advice: [
       'Use SPF 30+ and reapply every 2 hours.',
       'Wear UV-blocking sunglasses and a hat.',
@@ -67,6 +72,7 @@ const LEVELS: UvLevel[] = [
     color: '#EF4444',
     colorDark: '#C9302C',
     shortTip: 'Limit midday exposure',
+    headline: 'Take care.',
     advice: [
       'Minimize sun exposure between 10am and 4pm.',
       'Apply SPF 50, reapply often, and cover up.',
@@ -81,6 +87,7 @@ const LEVELS: UvLevel[] = [
     color: '#A855F7',
     colorDark: '#8B3FD6',
     shortTip: 'Avoid direct sun',
+    headline: 'Stay in.',
     advice: [
       'Avoid being outside during midday hours.',
       'Shirt, sunscreen, hat and sunglasses are a must.',

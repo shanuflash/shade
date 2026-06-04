@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   title: {
-    fontFamily: fonts.display,
+    fontFamily: fonts.bold,
     fontSize: font.h2,
     fontWeight: weight.bold,
   },
@@ -111,15 +111,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   segmentText: {
+    fontFamily: fonts.semibold,
     fontSize: font.caption,
     fontWeight: weight.semibold,
   },
   aboutTitle: {
+    fontFamily: fonts.bold,
     fontSize: font.title,
     fontWeight: weight.bold,
     marginBottom: spacing.sm,
   },
   aboutText: {
+    fontFamily: fonts.regular,
     fontSize: font.body,
     lineHeight: 22,
     marginBottom: spacing.sm,

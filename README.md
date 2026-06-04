@@ -1,21 +1,22 @@
 # Shade
 
-An Android UV index app built with Expo and React Native. It shows the current
-UV, an hourly forecast, today's peak, and what protection you need, plus
-home-screen widgets in four sizes. Data comes from the free
-[Open-Meteo](https://open-meteo.com) API. There is no backend.
+An Android UV index app built with Expo and React Native. A sleek, black,
+editorial interface shows the current UV, the curve through the day, and what
+protection you need, plus a circular home-screen widget. Data comes from the
+free [Open-Meteo](https://open-meteo.com) API. There is no backend.
 
 ## Features
 
-- Current UV index on an animated, color-coded gauge
-- Hourly forecast and today's peak UV with the time it hits
+- Big, color-coded current UV with a 0–11 scale and the band label
+- A smooth UV-through-the-day curve with a "now" marker
 - Protection advice per UV band, with extra tips for cloud cover, sunset, and
   safer time windows
-- Home-screen widgets: 1x1, 2x2, 4x2, and 4x1
+- Peak, next safe time, and sunset at a glance
+- A circular 1×1 home-screen widget that refreshes itself
 - Automatic location or manual city search
 - Local caching and background refresh, so it works offline and stays light on
   battery
-- Light and dark themes
+- Dark-first design (Space Grotesk), with a light theme
 
 ## Stack
 
@@ -25,8 +26,9 @@ home-screen widgets in four sizes. Data comes from the free
 - Zustand for settings
 - expo-location for location
 - expo-background-task for periodic refresh
-- react-native-android-widget for the widgets
-- react-native-reanimated and react-native-svg for the gauge
+- react-native-android-widget for the widget
+- react-native-svg for the UV curve, react-native-reanimated for entrance motion
+- Space Grotesk via @expo-google-fonts
 
 ## Layout
 
@@ -39,8 +41,8 @@ src/
   state/             settings store
   hooks/             useForecast, useAutoLocation
   theme/             tokens, palettes, useTheme
-  components/        gauge, cards, header, state views
-  widget/            widget layouts, task handler, update helper
+  components/        UV curve, header, recommendation, state views
+  widget/            widget layout, task handler, update helper
   tasks/             background refresh
   utils/             time helpers
 index.js             registers the widget handler, then expo-router
@@ -54,9 +56,12 @@ next launch. Each successful fetch also writes a small payload to
 `src/data/cache.ts`, which the widgets and the background task read. That keeps
 the app and the widgets showing the same numbers.
 
-The background task (`src/tasks/backgroundRefresh.ts`) runs roughly every 30
-minutes via Android WorkManager. It refreshes the cache and updates the widgets.
-There is no foreground polling.
+Refresh happens through two complementary triggers, both using the last known
+location (no live GPS needed). The background task
+(`src/tasks/backgroundRefresh.ts`) runs via Android WorkManager, and the
+widget's own ~30-minute tick (`src/widget/widgetTaskHandler.tsx`) refetches when
+the cache is stale — Android honours that tick reliably. Reopening the app also
+refetches if the cache has aged. There is no foreground polling.
 
 ## Running it
 
@@ -68,7 +73,7 @@ npm install
 npx expo run:android
 ```
 
-To add a widget, long-press the home screen, open Widgets, and pick a Shade size.
+To add the widget, long-press the home screen, open Widgets, and pick Shade UV.
 
 ## Building an APK without Android Studio
 

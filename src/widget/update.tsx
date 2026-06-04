@@ -6,7 +6,7 @@ import type { CachedForecast } from '../data/cache';
 import { widgetComponents, widgetNames } from './layouts';
 
 export function renderWidgetByName(name: string, data: CachedForecast | null) {
-  const Component = widgetComponents[name] ?? widgetComponents.UvSmall;
+  const Component = widgetComponents[name] ?? widgetComponents.Uv;
   return <Component data={data} />;
 }
 

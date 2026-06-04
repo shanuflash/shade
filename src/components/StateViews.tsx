@@ -3,6 +3,7 @@ import React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../theme/useTheme';
+import { fonts } from '../theme/fonts';
 import { font, radius, spacing, weight } from '../theme/tokens';
 
 export function LoadingView({ message }: { message?: string }) {
@@ -48,11 +49,13 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   title: {
+    fontFamily: fonts.bold,
     fontSize: font.title,
     fontWeight: weight.bold,
     marginTop: spacing.sm,
   },
   text: {
+    fontFamily: fonts.regular,
     fontSize: font.body,
     textAlign: 'center',
     lineHeight: 22,
@@ -64,6 +67,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
   },
   actionText: {
+    fontFamily: fonts.bold,
     color: '#FFFFFF',
     fontSize: font.body,
     fontWeight: weight.bold,

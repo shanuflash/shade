@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
   },
   title: {
-    fontFamily: fonts.display,
+    fontFamily: fonts.semibold,
     fontSize: font.micro,
     letterSpacing: 1.5,
     marginBottom: spacing.md,

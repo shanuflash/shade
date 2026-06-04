@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: {
-    fontFamily: fonts.display,
+    fontFamily: fonts.bold,
     fontSize: font.h2,
     fontWeight: weight.bold,
   },
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    fontFamily: fonts.regular,
     fontSize: font.body,
   },
   currentRow: {
@@ -154,6 +155,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   currentText: {
+    fontFamily: fonts.semibold,
     fontSize: font.body,
     fontWeight: weight.semibold,
   },
@@ -166,10 +168,12 @@ const styles = StyleSheet.create({
   },
   resultText: {
     flex: 1,
+    fontFamily: fonts.medium,
     fontSize: font.body,
     fontWeight: weight.medium,
   },
   empty: {
+    fontFamily: fonts.regular,
     textAlign: 'center',
     marginTop: spacing.xl,
     fontSize: font.body,

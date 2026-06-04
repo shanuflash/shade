@@ -1,7 +1,8 @@
-// Font family names registered in app/_layout.tsx via expo-font.
+// Space Grotesk family names. Registered in app/_layout.tsx via expo-font using
+// the TTFs bundled by @expo-google-fonts/space-grotesk.
 export const fonts = {
-  // Ndot55: dotted display face, used for the big numerals.
-  dot: 'Ndot55',
-  // NType82: headline face, used for titles and short labels.
-  display: 'NType82',
+  regular: 'SpaceGrotesk_400Regular',
+  medium: 'SpaceGrotesk_500Medium',
+  semibold: 'SpaceGrotesk_600SemiBold',
+  bold: 'SpaceGrotesk_700Bold',
 };

@@ -4,90 +4,54 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { Recommendation } from '../domain/recommendations';
 import { useTheme } from '../theme/useTheme';
-import { font, spacing, weight } from '../theme/tokens';
-import { Card } from './Card';
-import { DotRow } from './DotRow';
+import { fonts } from '../theme/fonts';
+import { font, spacing } from '../theme/tokens';
 
 interface Props {
   recommendation: Recommendation;
 }
 
+// Editorial protection block: a one-word imperative headline, the band's advice,
+// then any situational context tips. No card chrome — sits on the black canvas.
 export function RecommendationCard({ recommendation }: Props) {
   const { colors } = useTheme();
-  const { level, tips } = recommendation;
+  const { level, tips, safeNow } = recommendation;
 
   return (
-    <Card title="Protection">
-      <Text style={[styles.tip, { color: colors.text }]}>{level.shortTip}</Text>
-      <View style={styles.metaRow}>
-        <DotRow filled={level.index + 1} color={level.color} size={8} />
-        <Text style={[styles.range, { color: colors.textDim }]}>
-          {level.label} · UV {level.range}
-        </Text>
-      </View>
-
-      <View style={styles.advice}>
-        {level.advice.map((a) => (
-          <View key={a} style={styles.adviceRow}>
-            <View style={[styles.dot, { backgroundColor: level.color }]} />
-            <Text style={[styles.adviceText, { color: colors.textDim }]}>{a}</Text>
-          </View>
-        ))}
-      </View>
+    <View>
+      <Text style={[styles.headline, { color: colors.text }]}>
+        {safeNow ? 'Go enjoy it.' : level.headline}
+      </Text>
+      <Text style={[styles.advice, { color: colors.textDim }]}>{level.advice.join(' ')}</Text>
 
       {tips.length > 0 ? (
-        <View style={[styles.tips, { borderTopColor: colors.border }]}>
+        <View style={styles.tips}>
           {tips.map((t) => (
             <View key={t.id} style={styles.tipRow}>
-              <Ionicons name={t.icon as never} size={16} color={colors.accent} />
-              <Text style={[styles.contextText, { color: colors.text }]}>{t.text}</Text>
+              <Ionicons name={t.icon as never} size={15} color={colors.accent} />
+              <Text style={[styles.tipText, { color: colors.textDim }]}>{t.text}</Text>
             </View>
           ))}
         </View>
       ) : null}
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  tip: {
-    fontSize: font.title,
-    fontWeight: weight.bold,
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginTop: spacing.sm,
-  },
-  range: {
-    fontSize: font.caption,
-    fontWeight: weight.medium,
+  headline: {
+    fontFamily: fonts.bold,
+    fontSize: 30,
+    letterSpacing: -0.5,
   },
   advice: {
-    marginTop: spacing.lg,
-    gap: spacing.sm,
-  },
-  adviceRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: spacing.md,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginTop: 7,
-  },
-  adviceText: {
-    flex: 1,
+    fontFamily: fonts.regular,
     fontSize: font.body,
-    lineHeight: 21,
+    lineHeight: 22,
+    marginTop: spacing.sm,
   },
   tips: {
     marginTop: spacing.lg,
-    paddingTop: spacing.lg,
-    borderTopWidth: StyleSheet.hairlineWidth,
     gap: spacing.md,
   },
   tipRow: {
@@ -95,10 +59,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: spacing.md,
   },
-  contextText: {
+  tipText: {
     flex: 1,
-    fontSize: font.body,
-    fontWeight: weight.medium,
-    lineHeight: 21,
+    fontFamily: fonts.regular,
+    fontSize: font.caption,
+    lineHeight: 20,
   },
 });
