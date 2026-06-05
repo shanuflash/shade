@@ -1,3 +1,6 @@
+// react-native-android-widget walks widget components as plain functions, so the
+// React 19 compiler must not memoize them (per the library's guidance).
+'use no memo';
 import React from 'react';
 import { FlexWidget, OverlapWidget, TextWidget } from 'react-native-android-widget';
 
@@ -18,7 +21,8 @@ const DIM: Hex = '#7D7D85';
 const FONT = 'SpaceGrotesk_700Bold';
 
 // A plain black circular 1x1 tile. The UV number stays centred; the band-coloured
-// dot is overlaid in the top-right corner so it never shifts the number.
+// dot is overlaid near the top-right (~1:30 on the circle) so it never shifts the
+// number. The ~12dp inset keeps the dot inside the rounded edge across cell sizes.
 function Tile({ dot, value, valueColor }: { dot: Hex; value: string; valueColor: Hex }) {
   return (
     <OverlapWidget
@@ -39,10 +43,10 @@ function Tile({ dot, value, valueColor }: { dot: Hex; value: string; valueColor:
           alignItems: 'center',
         }}
       >
-        <TextWidget text={value} style={{ color: valueColor, fontSize: 38, fontFamily: FONT }} />
+        <TextWidget text={value} style={{ color: valueColor, fontSize: 36, fontFamily: FONT }} />
         <TextWidget
           text="UV"
-          style={{ color: DIM, fontSize: 10, fontFamily: FONT, letterSpacing: 2, marginTop: 1 }}
+          style={{ color: DIM, fontSize: 10, fontFamily: FONT, letterSpacing: 2 }}
         />
       </FlexWidget>
 
@@ -50,13 +54,14 @@ function Tile({ dot, value, valueColor }: { dot: Hex; value: string; valueColor:
         style={{
           height: 'match_parent',
           width: 'match_parent',
-          justifyContent: 'flex-start',
-          alignItems: 'flex-end',
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          alignItems: 'flex-start',
+          paddingTop: 12,
+          paddingRight: 12,
         }}
       >
-        <FlexWidget
-          style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: dot, marginTop: 16, marginRight: 16 }}
-        />
+        <FlexWidget style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: dot }} />
       </FlexWidget>
     </OverlapWidget>
   );
