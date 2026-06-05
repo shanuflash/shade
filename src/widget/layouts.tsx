@@ -17,43 +17,41 @@ const DIM: Hex = '#7D7D85';
 // Matches the TTF base name registered in the widget plugin's `fonts` list.
 const FONT = 'SpaceGrotesk_700Bold';
 
-// A perfectly round 1x1 tile: a band-coloured ring (a coloured circle showing
-// through the padding) around a black inner circle with the UV number.
-function Circle({ ring, children }: { ring: Hex; children: React.ReactNode }) {
+// A plain black circular 1x1 tile with a small band-coloured dot above the UV
+// number — the dot is the only colour, the number stays white.
+function Circle({ children }: { children: React.ReactNode }) {
   return (
     <FlexWidget
       clickAction="OPEN_APP"
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: ring,
+        backgroundColor: BG,
         borderRadius: 1000,
-        padding: 6,
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        padding: 6,
       }}
     >
-      <FlexWidget
-        style={{
-          height: 'match_parent',
-          width: 'match_parent',
-          backgroundColor: BG,
-          borderRadius: 1000,
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        {children}
-      </FlexWidget>
+      {children}
     </FlexWidget>
+  );
+}
+
+function Dot({ color }: { color: Hex }) {
+  return (
+    <FlexWidget
+      style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: color, marginBottom: 5 }}
+    />
   );
 }
 
 export function Uv({ data }: WidgetProps) {
   if (!data) {
     return (
-      <Circle ring={RING_TRACK}>
+      <Circle>
+        <Dot color={RING_TRACK} />
         <TextWidget text="—" style={{ color: DIM, fontSize: 34, fontFamily: FONT }} />
         <TextWidget
           text="UV"
@@ -65,7 +63,8 @@ export function Uv({ data }: WidgetProps) {
 
   const level = uvLevel(data.forecast.currentUv);
   return (
-    <Circle ring={level.color}>
+    <Circle>
+      <Dot color={level.color} />
       <TextWidget
         text={`${Math.round(data.forecast.currentUv)}`}
         style={{ color: WHITE, fontSize: 38, fontFamily: FONT }}

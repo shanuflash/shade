@@ -8,7 +8,10 @@ export type LocationStatus = 'idle' | 'loading' | 'granted' | 'denied' | 'error'
 
 function buildLabel(place: Location.LocationGeocodedAddress | undefined): string {
   if (!place) return 'Current location';
+  // Prefer the sub-locality (e.g. "Poonamallee") over the broader city
+  // ("Chennai"); fall back to ever-wider regions if it isn't available.
   return (
+    place.district ||
     place.city ||
     place.subregion ||
     place.region ||
