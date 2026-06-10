@@ -2,10 +2,10 @@
 // React 19 compiler must not memoize them (per the library's guidance).
 'use no memo';
 import React from 'react';
-import { FlexWidget, OverlapWidget, TextWidget } from 'react-native-android-widget';
+import { FlexWidget, OverlapWidget, SvgWidget } from 'react-native-android-widget';
 
 import type { CachedForecast } from '../data/cache';
-import { uvLevel } from '../domain/uvLevels';
+import { uvLevel, type ProtectionAction } from '../domain/uvLevels';
 
 export interface WidgetProps {
   data: CachedForecast | null;
@@ -17,14 +17,35 @@ const BG: Hex = '#1B1B1B';
 const RING_TRACK: Hex = '#1C1C20';
 const WHITE: Hex = '#F4F4F6';
 const DIM: Hex = '#7D7D85';
-// Matches the TTF base name registered in the widget plugin's `fonts` list.
-const FONT = 'SpaceGrotesk_700Bold';
 
-// A plain black circular 1x1 tile. The UV number is the only centred element, so
-// it sits dead-centre; the band-coloured dot is overlaid near the top-right
-// (~1:30 on the circle) and never shifts the number. The ~12dp inset keeps the
-// dot inside the rounded edge across cell sizes.
-function Tile({ dot, value, valueColor }: { dot: Hex; value: string; valueColor: Hex }) {
+// Inline SVG glyphs for each protection action, drawn on a 24x24 grid as white
+// strokes. The widget tells you what to *do* (the glyph) and how urgent it is
+// (the band-coloured dot) — the raw UV number lives in the app. `color` is baked
+// into the stroke so the empty state can render the same art dimmed.
+function actionSvg(action: ProtectionAction, color: Hex): string {
+  // AndroidSVG (caverock) parses these via SVG.getFromString and needs the SVG
+  // namespace declared, so keep the xmlns on the root element.
+  const open = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">`;
+  const body = {
+    // Sun: clear, nothing to do.
+    none: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/>',
+    // Sunscreen bottle with a "+" mark.
+    sunscreen:
+      '<rect x="7.5" y="8" width="9" height="13" rx="2"/><path d="M10 8V5.5h4V8"/><rect x="9.5" y="2.5" width="5" height="3" rx="1"/><path d="M10 13.5h4M12 11.5v4"/>',
+    // UPF jacket: long sleeves hanging down, V-collar, centre zip with a pull.
+    jacket:
+      '<path d="M9 3.5 5 5.5 3 15 5.5 16 7 9 7 20.5 17 20.5 17 9 18.5 16 21 15 19 5.5 15 3.5 12 6.5Z"/><path d="M12 6.5V20.5"/><circle cx="12" cy="9.2" r="0.9"/>',
+    // Umbrella: stay in the shade.
+    shade:
+      '<path d="M3 11a9 8 0 0 1 18 0Z"/><path d="M12 3v8M12 11v6.5a2 2 0 0 0 4 0"/>',
+  }[action];
+  return `${open}${body}</svg>`;
+}
+
+// A plain circular 1x1 tile. The action glyph sits dead-centre; the band-coloured
+// dot is overlaid near the top-right (~1:30 on the circle) so it never shifts the
+// glyph. The ~12dp inset keeps the dot inside the rounded edge across cell sizes.
+function Tile({ dot, svg }: { dot: Hex; svg: string }) {
   return (
     <OverlapWidget
       clickAction="OPEN_APP"
@@ -43,7 +64,7 @@ function Tile({ dot, value, valueColor }: { dot: Hex; value: string; valueColor:
           alignItems: 'center',
         }}
       >
-        <TextWidget text={value} style={{ color: valueColor, fontSize: 40, fontFamily: FONT }} />
+        <SvgWidget svg={svg} style={{ width: 46, height: 46 }} />
       </FlexWidget>
 
       <FlexWidget
@@ -65,10 +86,10 @@ function Tile({ dot, value, valueColor }: { dot: Hex; value: string; valueColor:
 
 export function Uv({ data }: WidgetProps) {
   if (!data) {
-    return <Tile dot={RING_TRACK} value="—" valueColor={DIM} />;
+    return <Tile dot={RING_TRACK} svg={actionSvg('none', DIM)} />;
   }
   const level = uvLevel(data.forecast.currentUv);
-  return <Tile dot={level.color} value={`${Math.round(data.forecast.currentUv)}`} valueColor={WHITE} />;
+  return <Tile dot={level.color} svg={actionSvg(level.action, WHITE)} />;
 }
 
 // Maps each Android widget name (declared in app.json) to its layout.

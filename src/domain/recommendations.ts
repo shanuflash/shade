@@ -111,7 +111,7 @@ export function buildRecommendation(forecast: Forecast): Recommendation {
       icon: 'trending-up-outline',
       text: `Peak UV of ${Math.round(forecast.todayMaxUv)} around ${hourLabel(
         forecast.todayPeakTime,
-      )}. Limit sun exposure then.`,
+      )}. Keep the jacket on through then.`,
     });
   }
 
@@ -121,14 +121,14 @@ export function buildRecommendation(forecast: Forecast): Recommendation {
     tips.push({
       id: 'outdoor-now',
       icon: 'walk-outline',
-      text: 'Great time for outdoor activities right now.',
+      text: 'UV is low — fine to be out uncovered right now.',
     });
   } else if (safeWindows.length > 0) {
     const w = safeWindows[0];
     tips.push({
       id: 'outdoor-window',
       icon: 'time-outline',
-      text: `Safer outdoors ${w.startLabel} to ${w.endLabel} when UV is low.`,
+      text: `UV stays low ${w.startLabel} to ${w.endLabel} — best window to be out without the jacket.`,
     });
   }
 
