@@ -14,14 +14,12 @@ export interface WidgetProps {
 type Hex = `#${string}`;
 
 const BG: Hex = '#1B1B1B';
-const RING_TRACK: Hex = '#1C1C20';
-const WHITE: Hex = '#F4F4F6';
+// Glyph colour for the empty state (no cached forecast yet).
 const DIM: Hex = '#7D7D85';
 
-// Inline SVG glyphs for each protection action, drawn on a 24x24 grid as white
-// strokes. The widget tells you what to *do* (the glyph) and how urgent it is
-// (the band-coloured dot) — the raw UV number lives in the app. `color` is baked
-// into the stroke so the empty state can render the same art dimmed.
+// Inline SVG glyphs for each protection action, drawn on a 24x24 grid. The widget
+// tells you what to *do* (the glyph) and how urgent it is (the glyph is tinted
+// with the band colour) — the raw UV number lives in the app.
 function actionSvg(action: ProtectionAction, color: Hex): string {
   // AndroidSVG (caverock) parses these via SVG.getFromString and needs the SVG
   // namespace declared, so keep the xmlns on the root element.
@@ -42,10 +40,10 @@ function actionSvg(action: ProtectionAction, color: Hex): string {
   return `${open}${body}</svg>`;
 }
 
-// A plain circular 1x1 tile. The action glyph sits dead-centre; the band-coloured
-// dot is overlaid near the top-right (~1:30 on the circle) so it never shifts the
-// glyph. The ~12dp inset keeps the dot inside the rounded edge across cell sizes.
-function Tile({ dot, svg }: { dot: Hex; svg: string }) {
+// A plain circular 1x1 tile with the action glyph centred. The glyph carries both
+// the action (its shape) and the urgency (its band colour), so no extra indicator
+// is needed.
+function Tile({ svg }: { svg: string }) {
   return (
     <OverlapWidget
       clickAction="OPEN_APP"
@@ -64,21 +62,7 @@ function Tile({ dot, svg }: { dot: Hex; svg: string }) {
           alignItems: 'center',
         }}
       >
-        <SvgWidget svg={svg} style={{ width: 46, height: 46 }} />
-      </FlexWidget>
-
-      <FlexWidget
-        style={{
-          height: 'match_parent',
-          width: 'match_parent',
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          alignItems: 'flex-start',
-          paddingTop: 12,
-          paddingRight: 12,
-        }}
-      >
-        <FlexWidget style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: dot }} />
+        <SvgWidget svg={svg} style={{ width: 48, height: 48 }} />
       </FlexWidget>
     </OverlapWidget>
   );
@@ -86,10 +70,10 @@ function Tile({ dot, svg }: { dot: Hex; svg: string }) {
 
 export function Uv({ data }: WidgetProps) {
   if (!data) {
-    return <Tile dot={RING_TRACK} svg={actionSvg('none', DIM)} />;
+    return <Tile svg={actionSvg('none', DIM)} />;
   }
   const level = uvLevel(data.forecast.currentUv);
-  return <Tile dot={level.color} svg={actionSvg(level.action, WHITE)} />;
+  return <Tile svg={actionSvg(level.action, level.color)} />;
 }
 
 // Maps each Android widget name (declared in app.json) to its layout.
