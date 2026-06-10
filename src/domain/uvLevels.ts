@@ -2,10 +2,16 @@
 //
 // This app is about preventing tan, not just sunburn. Tanning is driven by
 // cumulative UV exposure and kicks in well below the sunburn threshold, so the
-// guidance below is deliberately stricter than typical weather-app advice. It's
-// tuned for Fitzpatrick type IV skin (tans easily, rarely burns) and assumes the
-// user owns a UPF "sunscreen jacket" — the most reliable tan blocker, since it
+// guidance below is deliberately stricter than typical weather-app advice. That
+// holds for everyone — the goal here is avoiding pigmentation, not just burning.
+// It's written for someone who tans readily and wants to minimise it, and assumes
+// the user owns a UPF "sunscreen jacket" — the most reliable tan blocker, since it
 // stops UV on covered skin entirely rather than just slowing it like sunscreen.
+//
+// Deliberately no Fitzpatrick phototype: the scale is inconsistent and was built
+// around lighter skin (V/VI added years later), so it's a poor basis for this.
+// Strictness comes from the tan-prevention goal, with room for a user-adjustable
+// sensitivity setting later.
 
 export type UvCategory = 'low' | 'moderate' | 'high' | 'veryHigh' | 'extreme';
 
