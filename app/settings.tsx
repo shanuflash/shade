@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Card } from '../src/components/Card';
+import type { Surroundings } from '../src/domain/tanning';
 import { useSettings, type ThemePref } from '../src/state/settingsStore';
 import { useTheme } from '../src/theme/useTheme';
 import { fonts } from '../src/theme/fonts';
@@ -16,12 +17,25 @@ const THEME_OPTIONS: { value: ThemePref; label: string; icon: keyof typeof Ionic
   { value: 'dark', label: 'Dark', icon: 'moon-outline' },
 ];
 
+const SURROUNDINGS_OPTIONS: {
+  value: Surroundings;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}[] = [
+  { value: 'open', label: 'Open', icon: 'leaf-outline' },
+  { value: 'sand', label: 'Beach', icon: 'umbrella-outline' },
+  { value: 'water', label: 'Water', icon: 'water-outline' },
+  { value: 'snow', label: 'Snow', icon: 'snow-outline' },
+];
+
 export default function SettingsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const themePref = useSettings((s) => s.themePref);
   const setThemePref = useSettings((s) => s.setThemePref);
+  const surroundings = useSettings((s) => s.surroundings);
+  const setSurroundings = useSettings((s) => s.setSurroundings);
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background, paddingTop: insets.top + spacing.md }]}>
@@ -57,6 +71,35 @@ export default function SettingsScreen() {
                     styles.segmentText,
                     { color: active ? '#FFFFFF' : colors.text },
                   ]}
+                >
+                  {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </Card>
+
+      <Card title="Surroundings">
+        <Text style={[styles.helpText, { color: colors.textDim }]}>
+          Snow, sand and water reflect extra UV that the index misses. Set what's
+          around you and Shade adjusts its tanning advice.
+        </Text>
+        <View style={styles.segment}>
+          {SURROUNDINGS_OPTIONS.map((opt) => {
+            const active = surroundings === opt.value;
+            return (
+              <Pressable
+                key={opt.value}
+                style={[
+                  styles.surroundItem,
+                  { backgroundColor: active ? colors.accent : colors.surfaceAlt },
+                ]}
+                onPress={() => setSurroundings(opt.value)}
+              >
+                <Ionicons name={opt.icon} size={20} color={active ? '#FFFFFF' : colors.textDim} />
+                <Text
+                  style={[styles.segmentText, { color: active ? '#FFFFFF' : colors.text }]}
                 >
                   {opt.label}
                 </Text>
@@ -109,6 +152,20 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingVertical: spacing.md,
     borderRadius: radius.md,
+  },
+  surroundItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
+  },
+  helpText: {
+    fontFamily: fonts.regular,
+    fontSize: font.caption,
+    lineHeight: 19,
+    marginBottom: spacing.md,
   },
   segmentText: {
     fontFamily: fonts.semibold,

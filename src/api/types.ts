@@ -1,6 +1,8 @@
 export interface OpenMeteoForecastResponse {
   latitude: number;
   longitude: number;
+  /** Ground elevation at the location, metres. Used for the altitude UV boost. */
+  elevation?: number;
   timezone: string;
   utc_offset_seconds: number;
   current?: {
@@ -31,6 +33,8 @@ export interface HourlyPoint {
 
 export interface Forecast {
   currentUv: number;
+  /** Ground elevation in metres (0 when the API omits it). */
+  elevation: number;
   currentTime: string;
   /** Null when the current hour isn't present in the response. */
   currentCloudCover: number | null;

@@ -2,7 +2,7 @@ import React from 'react';
 import { requestWidgetUpdate } from 'react-native-android-widget';
 
 import type { Forecast, SavedLocation } from '../api/types';
-import type { CachedForecast } from '../data/cache';
+import { readSurroundings, type CachedForecast } from '../data/cache';
 import { widgetComponents, widgetNames } from './layouts';
 
 export function renderWidgetByName(name: string, data: CachedForecast | null) {
@@ -12,7 +12,8 @@ export function renderWidgetByName(name: string, data: CachedForecast | null) {
 
 // Refreshes every placed widget. widgetNotFound covers sizes the user hasn't added.
 export async function updateUvWidget(forecast: Forecast, location: SavedLocation) {
-  const data: CachedForecast = { forecast, location, fetchedAt: Date.now() };
+  const surroundings = await readSurroundings();
+  const data: CachedForecast = { forecast, location, fetchedAt: Date.now(), surroundings };
   for (const name of widgetNames) {
     try {
       await requestWidgetUpdate({

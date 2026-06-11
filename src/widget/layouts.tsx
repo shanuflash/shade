@@ -5,6 +5,7 @@ import React from 'react';
 import { FlexWidget, OverlapWidget, SvgWidget } from 'react-native-android-widget';
 
 import type { CachedForecast } from '../data/cache';
+import { effectiveUv } from '../domain/tanning';
 import { uvLevel, type ProtectionAction } from '../domain/uvLevels';
 
 export interface WidgetProps {
@@ -23,7 +24,7 @@ const DIM: Hex = '#7D7D85';
 function actionSvg(action: ProtectionAction, color: Hex): string {
   // AndroidSVG (caverock) parses these via SVG.getFromString and needs the SVG
   // namespace declared, so keep the xmlns on the root element.
-  const open = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">`;
+  const open = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">`;
   const body = {
     // Sun: clear, nothing to do.
     none: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6"/>',
@@ -72,7 +73,10 @@ export function Uv({ data }: WidgetProps) {
   if (!data) {
     return <Tile svg={actionSvg('none', DIM)} />;
   }
-  const level = uvLevel(data.forecast.currentUv);
+  // Match the app: the glyph reflects the effective tanning load (raw UV adjusted
+  // for altitude and reflective surroundings), not the bare index.
+  const eff = effectiveUv(data.forecast.currentUv, data.forecast.elevation, data.surroundings ?? 'open');
+  const level = uvLevel(eff);
   return <Tile svg={actionSvg(level.action, level.color)} />;
 }
 

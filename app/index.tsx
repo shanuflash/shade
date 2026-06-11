@@ -32,10 +32,14 @@ export default function HomeScreen() {
   const { colors } = useTheme();
 
   const mode = useSettings((s) => s.mode);
+  const surroundings = useSettings((s) => s.surroundings);
   const { status, resolve } = useAutoLocation();
   const { data, isLoading, isError, isFetching, refetch, location } = useForecast();
 
-  const recommendation = useMemo(() => (data ? buildRecommendation(data) : null), [data]);
+  const recommendation = useMemo(
+    () => (data ? buildRecommendation(data, surroundings) : null),
+    [data, surroundings],
+  );
 
   const header = (
     <LocationHeader
@@ -101,6 +105,8 @@ export default function HomeScreen() {
 
   const { level } = recommendation;
   const uv = Math.round(data.currentUv);
+  const effUv = Math.round(recommendation.effectiveUv);
+  const amplified = effUv > uv;
 
   return (
     <Screen insetsTop={insets.top}>
@@ -128,7 +134,9 @@ export default function HomeScreen() {
             <Text style={[styles.heroLevel, { color: level.color }]}>
               {level.label.toUpperCase()}
             </Text>
-            <Text style={[styles.heroRange, { color: colors.textFaint }]}>of 11+</Text>
+            <Text style={[styles.heroRange, { color: colors.textFaint }]}>
+              {amplified ? `tans like UV ${effUv}` : 'of 11+'}
+            </Text>
           </View>
         </Animated.View>
 

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { Forecast, SavedLocation } from '../api/types';
+import type { Surroundings } from '../domain/tanning';
 
 const CACHE_KEY = 'shade.forecast.v1';
 // Matches the zustand persist `name` in src/state/settingsStore.ts.
@@ -13,6 +14,8 @@ export interface CachedForecast {
   forecast: Forecast;
   location: SavedLocation;
   fetchedAt: number; // epoch ms
+  /** Surroundings at write time, so the headless widget can adjust for tanning. */
+  surroundings?: Surroundings;
 }
 
 // The app, the widget's headless task, and the background task all read and
@@ -21,8 +24,23 @@ export async function writeForecastCache(
   forecast: Forecast,
   location: SavedLocation,
 ): Promise<void> {
-  const payload: CachedForecast = { forecast, location, fetchedAt: Date.now() };
+  const surroundings = await readSurroundings();
+  const payload: CachedForecast = { forecast, location, fetchedAt: Date.now(), surroundings };
   await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(payload));
+}
+
+// Reads the surroundings preference straight from the persisted settings blob,
+// so headless contexts (widget/background) can apply the tanning adjustment
+// without the hydrated zustand store.
+export async function readSurroundings(): Promise<Surroundings> {
+  try {
+    const raw = await AsyncStorage.getItem(SETTINGS_KEY);
+    if (!raw) return 'open';
+    const parsed = JSON.parse(raw) as { state?: { surroundings?: Surroundings } };
+    return parsed.state?.surroundings ?? 'open';
+  } catch {
+    return 'open';
+  }
 }
 
 export async function readForecastCache(): Promise<CachedForecast | null> {

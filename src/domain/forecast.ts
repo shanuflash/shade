@@ -37,6 +37,7 @@ export function normalizeForecast(res: OpenMeteoForecastResponse): Forecast {
 
   return {
     currentUv: current.uv_index ?? 0,
+    elevation: res.elevation ?? 0,
     currentTime,
     currentCloudCover: currentPoint?.cloudCover ?? null,
     currentUvClearSky: currentPoint?.uvClearSky ?? null,
