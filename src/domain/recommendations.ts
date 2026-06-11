@@ -107,6 +107,16 @@ export function buildRecommendation(
     });
   }
 
+  // At high UV even a short stint tans skin that tans easily, so don't let a quick
+  // errand feel "free" the way it genuinely is at low/moderate UV.
+  if (effUv >= 6) {
+    tips.push({
+      id: 'quick',
+      icon: 'timer-outline',
+      text: 'Even 15–20 min counts now — cover up for anything past a quick dash.',
+    });
+  }
+
   // High effective UV even under heavy cloud cover.
   if (
     effUv >= LOW_UV &&
@@ -116,9 +126,9 @@ export function buildRecommendation(
     tips.push({
       id: 'clouds',
       icon: 'cloud-outline',
-      text: `UV is still ${level.label.toLowerCase()} despite ${Math.round(
+      text: `Still ${level.label.toLowerCase()} under ${Math.round(
         forecast.currentCloudCover,
-      )}% cloud cover. Clouds don't block all UV.`,
+      )}% cloud. Clouds cut the burning UV but let UVA — which tans you — through.`,
     });
   }
 

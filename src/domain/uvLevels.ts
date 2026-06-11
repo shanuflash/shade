@@ -50,11 +50,11 @@ const LEVELS: UvLevel[] = [
     color: '#3DBE6E',
     colorDark: '#2C9E58',
     action: 'none',
-    shortTip: "Won't tan, go free",
+    shortTip: 'Low tanning risk',
     headline: "You're clear.",
     advice: [
-      'Too little UV to tan — no cover-up needed.',
-      'Good window to be outside without the jacket.',
+      'Low tanning risk — short spells uncovered are fine.',
+      'Only long sessions add up here; no cover-up needed otherwise.',
     ],
   },
   {
